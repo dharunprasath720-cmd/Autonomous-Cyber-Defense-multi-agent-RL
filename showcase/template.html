@@ -24,13 +24,14 @@
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans);letter-spacing:.005em}
-.page{max-width:1440px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left,0px)) 40px max(16px,env(safe-area-inset-right,0px))}
-header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin:2px 0 12px}
-h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em}
-.tag{color:var(--mute);font-size:13px}
-.bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:12px}
-.bar label{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
-select,button{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:7px;padding:5px 9px}
+[hidden]{display:none!important}
+.page{max-width:1600px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 24px max(16px,env(safe-area-inset-right,0px))}
+.topline{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin:0 0 8px}
+h1{margin:0;font-size:18px;font-weight:700;letter-spacing:-.01em}
+.tag{color:var(--mute);font-size:12.5px}
+.bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:10px}
+.bar label{display:flex;flex-direction:column;gap:2px;font-size:10.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+select,button{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:7px;padding:4px 9px}
 select{min-width:0}
 button{cursor:pointer;transition:background .12s}
 button:hover{background:var(--soft)}
@@ -38,23 +39,40 @@ button.go{background:var(--ink);color:var(--bg);border-color:var(--ink);font-wei
 button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .scrub{flex:1 1 240px;min-width:180px}
 .scrub .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--mute);text-transform:none;letter-spacing:0}
-input[type=range]{width:100%;accent-color:var(--ink);margin:3px 0 0}
-.layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:12px;align-items:start}
-@media(max-width:1020px){.layout{grid-template-columns:1fr}}
-.col{display:flex;flex-direction:column;gap:12px;min-width:0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
-.card h2{margin:0 0 8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);display:flex;justify-content:space-between;align-items:center;gap:8px}
-.card h2 .r{font-family:var(--mono);text-transform:none;letter-spacing:0;font-weight:500;color:var(--faint)}
+input[type=range]{width:100%;accent-color:var(--ink);margin:2px 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;min-width:0}
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.half{min-height:0;display:flex;flex-direction:column}
+.left{padding:12px 14px}
+.cap{margin:0 0 6px;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);display:flex;justify-content:space-between;gap:8px}
+.cap .r{font-family:var(--mono);text-transform:none;letter-spacing:0;font-weight:500;color:var(--faint)}
+.mapwrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
 svg{display:block;width:100%;height:auto}
-.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mute);margin-top:6px}
+#net{height:100%;max-height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:11.5px;color:var(--mute);margin:4px 0 8px}
 .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
-/* feed */
-.feed{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:560px){.feed{grid-template-columns:1fr}}
-.feed h3{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-.feed h3.r{color:var(--red)} .feed h3.b{color:var(--blue)}
-.list{display:flex;flex-direction:column;gap:6px;height:178px;overflow:auto;padding-right:2px;scrollbar-width:thin}
-.stp{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:2px}
+.now{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--line);padding-top:8px}
+.now h3,.feed h3{margin:0 0 5px;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.now h3.r,.feed h3.r{color:var(--red)} .now h3.b,.feed h3.b{color:var(--blue)}
+.nowlist{display:flex;flex-direction:column;gap:5px;max-height:132px;overflow:auto;scrollbar-width:thin}
+/* tabs */
+.tabhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 12px;border-bottom:1px solid var(--line);padding:0 10px 0 6px}
+.tabs{display:flex;gap:0;flex-wrap:wrap}
+.tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:10px 11px 9px;color:var(--mute);font-weight:500;font-size:13px}
+.tab:hover{background:none;color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+.tab kbd{font-family:var(--mono);font-size:10px;color:var(--faint);margin-right:5px;border:1px solid var(--line);border-radius:3px;padding:0 3px}
+.status{font-family:var(--mono);font-size:12px;color:var(--mute);display:flex;gap:12px;white-space:nowrap}
+.status b{color:var(--ink);font-weight:600}
+.pane{flex:1 1 auto;min-height:0;overflow:auto;padding:12px 14px;scrollbar-width:thin}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:start}
+.two h4{margin:0 0 6px;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);display:flex;justify-content:space-between}
+.two h4 .r{font-family:var(--mono);text-transform:none;letter-spacing:0;color:var(--faint);font-weight:500}
+/* feed + items */
+.feed{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:620px){.feed,.now{grid-template-columns:1fr}}
+.list{display:flex;flex-direction:column;gap:6px}
+.stp{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:3px}
 .item{border-left:3px solid var(--line);padding:3px 8px;font-size:13px;background:var(--soft);border-radius:0 6px 6px 0}
 .item.r{border-left-color:var(--red)} .item.b{border-left-color:var(--blue)}
 .item small{display:block;color:var(--mute);font-size:11.5px;line-height:1.35;margin-top:1px}
@@ -73,124 +91,150 @@ svg{display:block;width:100%;height:auto}
 .li span:first-child{color:var(--ink)} .li small{display:block;color:var(--mute);font-size:11px}
 .amt{font-family:var(--mono);font-weight:500;white-space:nowrap}
 .pos{color:var(--pos)} .neg{color:var(--neg)} .zero{color:var(--faint)}
-.total{display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px;border-top:2px solid var(--ink);margin-top:2px}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px;border-top:2px solid var(--ink);margin-top:6px}
 .total b{font-size:13px;font-weight:600}
 .total .amt{font-size:20px;font-weight:600}
 .upd{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:center;text-align:center;margin:2px 0 10px}
 .upd .ul{font-size:10.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.07em}
 .upd .uv{font-family:var(--mono);font-size:19px;font-weight:600}
 .upd .op{color:var(--faint);font-size:17px}
-.chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px}
-.chips div{display:flex;justify-content:space-between;font-size:12px;border-bottom:1px dashed var(--line);padding:2px 0;gap:8px}
+.chips{display:grid;grid-template-columns:1fr;gap:3px}
+.chips div{display:flex;justify-content:space-between;font-size:12.5px;border-bottom:1px dashed var(--line);padding:3px 0;gap:8px}
 .chips div span:first-child{color:var(--mute)}
 .note{font-size:12px;color:var(--mute);margin:6px 0 0}
-/* lower sections */
-.lower{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:12px;margin-top:12px}
-@media(max-width:1020px){.lower{grid-template-columns:1fr}}
 table{border-collapse:collapse;width:100%;font-size:12.5px}
-th,td{padding:4px 8px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th,td{padding:5px 8px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
 th{color:var(--mute);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
 th:first-child,td:first-child{text-align:left}
 tr.cur td{background:var(--soft);font-weight:600}
-.log{max-height:170px;overflow:auto;font-size:12.5px;margin-top:6px;border-top:1px solid var(--line)}
+.log{max-height:240px;overflow:auto;font-size:12.5px;margin-top:8px;border-top:1px solid var(--line);scrollbar-width:thin}
 .log div{padding:3px 2px;cursor:pointer;border-bottom:1px dashed var(--line)}
 .log div:hover{background:var(--soft)}
-.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin-top:6px}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
 .k div{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;color:var(--mute)}
 .k b{display:block;color:var(--ink);font-size:12.5px;margin-bottom:1px}
 .k b.r{color:var(--red)} .k b.b{color:var(--blue)}
 details summary{cursor:pointer;font-weight:600;font-size:13px}
 .scroll{overflow-x:auto}
-.foot{color:var(--faint);font-size:12px;margin-top:14px}
-.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 4px;color:var(--mute)}
+.foot{color:var(--faint);font-size:12px;margin:10px 0 0}
+/* desktop: everything fits one screen, nothing to scroll */
+@media (min-width:1021px){
+  html,body{height:100%;overflow:hidden}
+  .page{height:100dvh;display:flex;flex-direction:column;padding-bottom:12px}
+  .main{flex:1;min-height:0}
+  .foot{display:none}
+}
+@media (max-width:1020px){
+  .main{grid-template-columns:1fr}
+  #net{height:auto}
+  .pane{overflow:visible}
+  .nowlist{max-height:none}
+}
 </style>
 </head>
 <body>
 <div class="page">
-  <header class="top">
+  <div class="topline">
     <h1>Red vs Blue: cyber defense replay</h1>
     <span class="tag">Recorded simulator episodes with trained defender agents. Every reward is traced to the action that earned it.</span>
-  </header>
+  </div>
 
   <div class="bar">
     <label>Defender<select id="blue"></select></label>
     <label>Episode<select id="seed"></select></label>
     <label>Speed<select id="speed"><option value="4500">Slow</option><option value="2600" selected>Normal</option><option value="1400">Fast</option></select></label>
     <div style="display:flex;gap:6px;align-items:flex-end"><button id="prev" aria-label="Previous step">◀</button><button id="play" class="go">▶ Play</button><button id="next" aria-label="Next step">▶</button></div>
-    <label class="scrub"><span class="row"><span>Step <span id="stepno"></span></span><span>space = play · ← → = step</span></span><input type="range" id="scrub" min="0" value="0" aria-label="Step"></label>
+    <label class="scrub"><span class="row"><span>Step <span id="stepno"></span></span><span>space play · ← → step · 1–5 tabs</span></span><input type="range" id="scrub" min="0" value="0" aria-label="Step"></label>
   </div>
 
-  <div class="layout">
-    <div class="col">
-      <div class="card">
-        <h2>Simulation <span class="r" id="simmeta"></span></h2>
-        <svg id="net" viewBox="0 0 900 470" role="img" aria-label="Network map showing attacker and defender activity"></svg>
-        <div class="legend">
-          <span><i style="background:var(--s0)"></i>clean</span><span><i style="background:var(--s1)"></i>early intrusion</span>
-          <span><i style="background:var(--s2)"></i>escalated</span><span><i style="background:var(--s3)"></i>breached</span>
-          <span>dashed ring isolated · ✓ patched · ◆ decoy · bar = anomaly the defender sees</span>
+  <div class="main">
+    <section class="half left card">
+      <div class="cap"><span>Simulation</span><span class="r" id="simmeta"></span></div>
+      <div class="mapwrap"><svg id="net" viewBox="0 0 900 470" role="img" aria-label="Network map showing attacker and defender activity"></svg></div>
+      <div class="legend">
+        <span><i style="background:var(--s0)"></i>clean</span><span><i style="background:var(--s1)"></i>early intrusion</span>
+        <span><i style="background:var(--s2)"></i>escalated</span><span><i style="background:var(--s3)"></i>breached</span>
+        <span>dashed ring isolated · ✓ patched · ◆ decoy · bar = anomaly the defender sees</span>
+      </div>
+      <div class="now">
+        <div><h3 class="r">● Red, this step</h3><div class="nowlist" id="nowRed"></div></div>
+        <div><h3 class="b">● Blue, this step</h3><div class="nowlist" id="nowBlue"></div></div>
+      </div>
+    </section>
+
+    <section class="half card">
+      <div class="tabhead">
+        <div class="tabs" role="tablist" aria-label="Panels">
+          <button class="tab" role="tab" data-tab="ledger"><kbd>1</kbd>Reward ledger</button>
+          <button class="tab" role="tab" data-tab="actions"><kbd>2</kbd>Live actions</button>
+          <button class="tab" role="tab" data-tab="timeline"><kbd>3</kbd>Timeline</button>
+          <button class="tab" role="tab" data-tab="compare"><kbd>4</kbd>Compare</button>
+          <button class="tab" role="tab" data-tab="guide"><kbd>5</kbd>Guide</button>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="pane" id="pane-ledger" role="tabpanel">
+        <div class="two">
+          <div>
+            <h4>Calculation <span class="r" id="ledmeta"></span></h4>
+            <div class="lg" id="ledger"></div>
+            <div class="total"><b>Reward this step</b><span class="amt" id="rt"></span></div>
+            <p class="note" id="zonesplit"></p>
+          </div>
+          <div>
+            <h4>Running score <span class="r">G = G + r</span></h4>
+            <div class="upd" id="upd"></div>
+            <div class="chips" id="cum"></div>
+            <details><summary>What the learning algorithm does with this</summary>
+              <p class="note">This replay only shows rewards. During training, PPO divides rewards by a running standard deviation of the discounted return, so a −500 penalty becomes about −1 and learning stays stable. It then forms an advantage A = r + γV(s′) − V(s) (smoothed by GAE, γ 0.99, λ 0.95) and makes actions with positive advantage more likely. Without the rescaling the large penalties swamp learning.</p>
+            </details>
+          </div>
         </div>
       </div>
-      <div class="card">
-        <h2>Live actions <span class="r" id="feedmeta"></span></h2>
+
+      <div class="pane" id="pane-actions" role="tabpanel" hidden>
+        <div class="cap"><span>Latest three steps, newest first</span><span class="r" id="feedmeta"></span></div>
         <div class="feed">
           <div><h3 class="r">● Red attacker</h3><div class="list" id="redev"></div></div>
           <div><h3 class="b">● Blue defender</h3><div class="list" id="blueev"></div></div>
         </div>
       </div>
-    </div>
 
-    <div class="col">
-      <div class="card">
-        <h2>Reward ledger <span class="r" id="ledmeta"></span></h2>
-        <div class="lg" id="ledger"></div>
-        <div class="total"><b>Reward this step</b><span class="amt" id="rt"></span></div>
-        <p class="note" id="zonesplit"></p>
+      <div class="pane" id="pane-timeline" role="tabpanel" hidden>
+        <div class="cap"><span>Cumulative reward over the episode</span><span class="r">click an event to jump</span></div>
+        <svg id="chart" viewBox="0 0 700 230"></svg>
+        <div class="log" id="log"></div>
       </div>
-      <div class="card">
-        <h2>Running score <span class="r">G = G + r</span></h2>
-        <div class="upd" id="upd"></div>
-        <div class="chips" id="cum"></div>
-        <details><summary>What the learning algorithm does with this</summary>
-          <p class="note">This replay only shows rewards. During training, PPO divides rewards by a running standard deviation of the discounted return, so a −500 penalty becomes about −1 and learning stays stable. It then forms an advantage A = r + γV(s′) − V(s) (smoothed by GAE, γ 0.99, λ 0.95) and makes actions with positive advantage more likely. Without the rescaling the large penalties swamp learning.</p>
+
+      <div class="pane" id="pane-compare" role="tabpanel" hidden>
+        <div class="cap"><span>Same episode, every defender</span></div>
+        <div class="scroll"><table id="score"></table></div>
+        <p class="note" id="scorenote"></p>
+      </div>
+
+      <div class="pane" id="pane-guide" role="tabpanel" hidden>
+        <div class="cap"><span>How the two sides interact</span></div>
+        <div class="k">
+          <div><b class="r">Phishing</b>Lands on workstations. Chance = vector base × host vulnerability × zone pressure.</div>
+          <div><b class="r">Malware</b>Hits most hosts; fastest against unpatched IoT and workstations.</div>
+          <div><b class="r">DDoS</b>Targets servers and cloud; redirect_traffic cuts its landing chance ×0.1.</div>
+          <div><b class="r">Escalation and theft</b>EARLY → ESCALATED → BREACHED. Faster on weakly patched hosts, databases and cloud.</div>
+          <div><b class="r">Lateral movement</b>An escalated host raises intrusion odds in the next zone (DMZ → Internal → Data tier).</div>
+          <div><b class="b">block_ip</b>Reverts an early intrusion (70%); landing chance ×0.25 for 5 steps.</div>
+          <div><b class="b">isolate_machine</b>Freezes a host for 5 steps. −200 downtime.</div>
+          <div><b class="b">patch_system</b>Vulnerability ×0.6 and landing chance halved.</div>
+          <div><b class="b">redirect_traffic</b>Scrubs traffic for 4 steps; strong against DDoS.</div>
+          <div><b class="b">deploy_honeypot</b>20-step decoy (max 3): 80% of landings on it are trapped, +50.</div>
+          <div><b class="b">restore_backup</b>Cleans a host. −50 downtime. The only exit from breached.</div>
+        </div>
+        <details open style="margin-top:10px"><summary>What this demo does and does not show</summary>
+          <p class="note">The defender sees only noisy anomaly scores, smoothed over time, plus its own flags. The true stage (node colour) is hidden from it, which is why it sometimes acts on a false alarm or misses an intrusion. This is a custom simulator, not CybORG or CAGE; its numbers are not comparable to those benchmarks and make no claim about real-world defense. Defenders: PPO (single agent), MAPPO (three zone agents, three actions per step) and a rule-based heuristic.</p>
         </details>
       </div>
-    </div>
+    </section>
   </div>
-
-  <div class="lower">
-    <div class="card">
-      <h2>Episode timeline <span class="r">cumulative reward</span></h2>
-      <svg id="chart" viewBox="0 0 700 150"></svg>
-      <div class="log" id="log"></div>
-    </div>
-    <div class="card">
-      <h2>Same episode, every defender</h2>
-      <div class="scroll"><table id="score"></table></div>
-      <p class="note" id="scorenote"></p>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:12px">
-    <h2>How the two sides interact</h2>
-    <div class="k">
-      <div><b class="r">Phishing</b>Lands on workstations. Chance = vector base × host vulnerability × zone pressure.</div>
-      <div><b class="r">Malware</b>Hits most hosts; fastest against unpatched IoT and workstations.</div>
-      <div><b class="r">DDoS</b>Targets servers and cloud; redirect_traffic cuts its landing chance ×0.1.</div>
-      <div><b class="r">Escalation and theft</b>EARLY → ESCALATED → BREACHED. Faster on weakly patched hosts, databases and cloud.</div>
-      <div><b class="r">Lateral movement</b>An escalated host raises intrusion odds in the next zone (DMZ → Internal → Data tier).</div>
-      <div><b class="b">block_ip</b>Reverts an early intrusion (70%); landing chance ×0.25 for 5 steps.</div>
-      <div><b class="b">isolate_machine</b>Freezes a host for 5 steps. −200 downtime.</div>
-      <div><b class="b">patch_system</b>Vulnerability ×0.6 and landing chance halved.</div>
-      <div><b class="b">redirect_traffic</b>Scrubs traffic for 4 steps; strong against DDoS.</div>
-      <div><b class="b">deploy_honeypot</b>20-step decoy (max 3): 80% of landings on it are trapped, +50.</div>
-      <div><b class="b">restore_backup</b>Cleans a host. −50 downtime. The only exit from breached.</div>
-    </div>
-    <details style="margin-top:8px"><summary>What this demo does and does not show</summary>
-      <p class="note">The defender sees only noisy anomaly scores, smoothed over time, plus its own flags. The true stage (node colour) is hidden from it, which is why it sometimes acts on a false alarm or misses an intrusion. This is a custom simulator, not CybORG or CAGE; its numbers are not comparable to those benchmarks and make no claim about real-world defense.</p>
-    </details>
-  </div>
-  <p class="foot">Simulated data only. Defenders: PPO (single agent), MAPPO (three zone agents, three actions per step) and a rule-based heuristic.</p>
+  <p class="foot">Simulated data only.</p>
 </div>
 
 <script id="data" type="application/json">/*DATA*/</script>
@@ -367,11 +411,11 @@ function renderFeed(){
 
 /* ---------- timeline, comparison ---------- */
 function drawChart(){
-  const svg=$('chart'); svg.innerHTML=''; const st=cur.steps,n=st.length,W=700,H=150,L=8,R=8,T=8,B=14;
+  const svg=$('chart'); svg.innerHTML=''; const st=cur.steps,n=st.length,W=700,H=230,L=8,R=8,T=8,B=14;
   let c=0; const cum=st.map(s=>c+=s.rew); const lo=Math.min(0,...cum),hi=Math.max(0,...cum);
   const X=k=>L+(W-L-R)*k/(n-1), Y=v=>T+(H-T-B)*(1-(v-lo)/((hi-lo)||1));
   svg.appendChild(el('line',{x1:L,x2:W-R,y1:Y(0),y2:Y(0),stroke:'var(--line)'}));
-  st.forEach((s,k)=>{const b=s.stage.filter(x=>x===3).length; if(b)svg.appendChild(el('rect',{x:X(k)-1.5,y:H-B-b*4,width:3,height:b*4,fill:'var(--s3)',opacity:.55}));});
+  st.forEach((s,k)=>{const b=s.stage.filter(x=>x===3).length; if(b)svg.appendChild(el('rect',{x:X(k)-1.5,y:H-B-b*6,width:3,height:b*6,fill:'var(--s3)',opacity:.55}));});
   svg.appendChild(el('path',{d:'M'+cum.map((v,k)=>`${X(k)} ${Y(v)}`).join('L'),fill:'none',stroke:'var(--ink)','stroke-width':1.6}));
   svg.appendChild(el('text',{x:W-R,y:H-1,'text-anchor':'end','font-size':10.5,fill:'var(--mute)'},`final ${Math.round(cum[n-1]).toLocaleString()}`));
   svg.appendChild(el('g',{id:'marker'}));
@@ -383,7 +427,7 @@ function drawChart(){
   log.onclick=e=>{const d=e.target.closest('div[data-k]'); if(d)go(+d.dataset.k);};
 }
 function drawMarker(){const g=$('marker'); if(!g)return; g.innerHTML=''; const n=cur.steps.length,x=8+(700-16)*i/(n-1);
-  g.appendChild(el('line',{x1:x,x2:x,y1:4,y2:136,stroke:'var(--blue)','stroke-width':1.6}));}
+  g.appendChild(el('line',{x1:x,x2:x,y1:4,y2:216,stroke:'var(--blue)','stroke-width':1.6}));}
 function drawScore(){
   const rows=D.scenarios.filter(s=>s.seed===cur.seed);
   $('score').innerHTML='<tr><th>Defender</th><th>Reward</th><th>Breach-steps</th><th>Intrusions</th><th>Traps</th><th>Actions</th></tr>'+
@@ -391,8 +435,32 @@ function drawScore(){
   $('scorenote').textContent='One episode only, so treat it as an illustration, not a benchmark. MAPPO acts three times per step (one per zone); the others once.';
 }
 
+
+/* ---------- always-visible summaries ---------- */
+function renderNow(){
+  const s=cur.steps[i], pv=i?cur.steps[i-1]:null;
+  const reds=s.ev.filter(e=>e.side==='red'&&!['busy','failed'].includes(e.outcome));
+  const missed=s.ev.filter(e=>e.side==='red'&&['busy','failed'].includes(e.outcome)).length;
+  const blues=s.ev.filter(e=>e.side==='blue'&&D.actions[e.action]!=='no_op');
+  const li=(c,t,d)=>`<div class="item ${c}">${t}<small>${d}</small></div>`;
+  $('nowRed').innerHTML=(reds.length?reds.map(e=>{const [t,d]=redText(e);return li('r',t,d)}).join(''):'<div class="quiet">no successful attack</div>')+
+    (missed?`<div class="quiet">${missed} other attempt${missed>1?'s':''} failed or wasted</div>`:'');
+  $('nowBlue').innerHTML=blues.length?blues.map(e=>{const [t,d]=blueText(e,pv);return li('b',t,d)}).join(''):`<div class="quiet">${cur.blue==='none'?'no defense':'no action (no_op)'}</div>`;
+}
+function renderStatus(){
+  const s=cur.steps[i], total=s.ev.filter(e=>e.side==='reward').reduce((a,e)=>a+e.amt,0);
+  $('status').innerHTML=`<span>r <b class="${cls(total)}">${fmt(total)||0}</b></span><span>G <b>${fmt(CUM[i].run)||0}</b></span><span>breached <b>${s.stage.filter(x=>x===3).length}</b></span>`;
+}
+/* ---------- tabs ---------- */
+const TABS=['ledger','actions','timeline','compare','guide'];
+function showTab(t){
+  if(!TABS.includes(t)) t='ledger';
+  TABS.forEach(x=>{ $('pane-'+x).hidden=(x!==t); document.querySelector(`[data-tab="${x}"]`).setAttribute('aria-selected',x===t?'true':'false'); });
+  try{ localStorage.setItem('rvb-tab',t); }catch(e){}
+}
+
 /* ---------- controls ---------- */
-function render(){ renderMap(); renderFeed(); renderLedger(); drawMarker(); }
+function render(){ renderMap(); renderFeed(); renderLedger(); renderNow(); renderStatus(); drawMarker(); }
 function go(n){ i=Math.max(0,Math.min(cur.steps.length-1,n)); $('scrub').value=i; $('stepno').textContent=`${i+1} / ${cur.steps.length}`; render(); }
 function stop(){ if(timer){clearInterval(timer);timer=null;} $('play').textContent='▶ Play'; }
 function start(){ if(i>=cur.steps.length-1)i=0; $('play').textContent='❚❚ Pause'; timer=setInterval(()=>{ if(i>=cur.steps.length-1){stop();return;} go(i+1); },+$('speed').value); }
@@ -405,7 +473,10 @@ function setup(){
   $('play').onclick=toggle; $('prev').onclick=()=>go(i-1); $('next').onclick=()=>go(i+1); $('scrub').oninput=e=>go(+e.target.value);
   $('speed').onchange=()=>{ if(timer){stop();start();} };
   document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)&&e.target.type!=='range')return;
-    if(e.key===' '){e.preventDefault();toggle();} else if(e.key==='ArrowRight'){go(i+1);} else if(e.key==='ArrowLeft'){go(i-1);} });
+    if(/^[1-5]$/.test(e.key)){showTab(TABS[+e.key-1]);} else if(e.key===' '){e.preventDefault();toggle();} else if(e.key==='ArrowRight'){go(i+1);} else if(e.key==='ArrowLeft'){go(i-1);} });
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+  let t0='ledger'; try{ t0=localStorage.getItem('rvb-tab')||'ledger'; }catch(e){}
+  showTab(t0);
   pick();
 }
 setup();
