@@ -1,0 +1,58 @@
+
+OFFLINE REPLAY (sim-to-real gap analysis; NOT a deployment claim) -- policy=mappo_s2, 16000 host-steps from real labeled CICIDS2017 flows
+
+--- TRAINED POLICY: counts ---
+policy_action                        no_op  block_ip  isolate_machine  patch_system  redirect_traffic  deploy_honeypot  restore_backup
+ground-truth stage \ implied action                                                                                                   
+UNCOMPROMISED                         2694      1056                0            27              1361             4461             274
+EARLY_INTRUSION                        411       204                0             1               316              807             231
+ESCALATED                              234        65                1             8               149              731             242
+BREACHED                               427       201                2             0               382             1069             646
+
+--- TRAINED POLICY: row-normalised (%) ---
+policy_action                        no_op  block_ip  isolate_machine  patch_system  redirect_traffic  deploy_honeypot  restore_backup
+ground-truth stage \ implied action                                                                                                   
+UNCOMPROMISED                         27.3      10.7              0.0           0.3              13.8             45.2             2.8
+EARLY_INTRUSION                       20.9      10.4              0.0           0.1              16.0             41.0            11.7
+ESCALATED                             16.4       4.5              0.1           0.6              10.4             51.1            16.9
+BREACHED                              15.7       7.4              0.1           0.0              14.0             39.2            23.7
+
+--- HEURISTIC (reference): counts ---
+heuristic_action                     no_op  block_ip  isolate_machine  patch_system  redirect_traffic  deploy_honeypot  restore_backup
+ground-truth stage \ implied action                                                                                                   
+UNCOMPROMISED                            0       851                0          9022                 0                0               0
+EARLY_INTRUSION                          0      1318                0           652                 0                0               0
+ESCALATED                                0       718                0           712                 0                0               0
+BREACHED                                 0      1547                0          1180                 0                0               0
+
+--- HEURISTIC (reference): row-normalised (%) ---
+heuristic_action                     no_op  block_ip  isolate_machine  patch_system  redirect_traffic  deploy_honeypot  restore_backup
+ground-truth stage \ implied action                                                                                                   
+UNCOMPROMISED                          0.0       8.6              0.0          91.4               0.0              0.0             0.0
+EARLY_INTRUSION                        0.0      66.9              0.0          33.1               0.0              0.0             0.0
+ESCALATED                              0.0      50.2              0.0          49.8               0.0              0.0             0.0
+BREACHED                               0.0      56.7              0.0          43.3               0.0              0.0             0.0
+
+[policy] binary 'responds vs attack' confusion: TP=2439 FP=2691 FN=3688 TN=7182 | precision=0.475 recall=0.398 F1=0.433 FAR=0.273
+        recall by stage: {'EARLY_INTRUSION': 0.381, 'ESCALATED': 0.32, 'BREACHED': 0.451}
+[heuristic] binary 'responds vs attack' confusion: TP=3583 FP=851 FN=2544 TN=9022 | precision=0.808 recall=0.585 F1=0.679 FAR=0.086
+        recall by stage: {'EARLY_INTRUSION': 0.669, 'ESCALATED': 0.502, 'BREACHED': 0.567}
+
+Response rate by true label (fraction of host-steps where an active response is implied):
+                             policy_responds  heur_responds
+label                                                     
+BENIGN                                0.273          0.086
+Bot                                   0.269          0.009
+DDoS                                  0.197          0.125
+DoS GoldenEye                         0.465          0.786
+DoS Hulk                              0.602          0.769
+DoS Slowhttptest                      0.707          0.865
+DoS slowloris                         0.501          0.778
+FTP-Patator                           0.209          0.002
+Heartbleed                            0.218          0.051
+Infiltration                          0.545          0.748
+PortScan                              0.381          0.737
+SSH-Patator                           0.256          0.714
+Web Attack - Brute Force              0.335          0.941
+Web Attack - Sql Injection            0.543          0.562
+Web Attack - XSS                      0.455          0.905

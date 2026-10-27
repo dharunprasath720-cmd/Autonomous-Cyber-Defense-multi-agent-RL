@@ -1,0 +1,16 @@
+label,policy_responds,heur_responds
+BENIGN,0.273,0.086
+Bot,0.269,0.009
+DDoS,0.197,0.125
+DoS GoldenEye,0.465,0.786
+DoS Hulk,0.602,0.769
+DoS Slowhttptest,0.707,0.865
+DoS slowloris,0.501,0.778
+FTP-Patator,0.209,0.002
+Heartbleed,0.218,0.051
+Infiltration,0.545,0.748
+PortScan,0.381,0.737
+SSH-Patator,0.256,0.714
+Web Attack - Brute Force,0.335,0.941
+Web Attack - Sql Injection,0.543,0.562
+Web Attack - XSS,0.455,0.905

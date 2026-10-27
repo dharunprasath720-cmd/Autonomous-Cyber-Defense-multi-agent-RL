@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+data/raw/
+results/stdout/
+showcase/artifact.html
+showcase/redblue-site.zip
+showcase/demo.html
+*.pyc

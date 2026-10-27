@@ -1,0 +1,21 @@
+  [adaptive_red] random       -              mean reward   -192554.7
+  [adaptive_red] heuristic    -              mean reward     -2240.3
+  [adaptive_red] random_ma    -              mean reward    -63520.3
+  [adaptive_red] heuristic_ma -              mean reward      -216.8
+  [adaptive_red] ppo          ppo_norm_s0    mean reward       248.5
+  [adaptive_red] ppo          ppo_norm_s1    mean reward       624.1
+  [adaptive_red] ppo          ppo_norm_s2    mean reward      1516.0
+  [adaptive_red] ippo         ippo_s0        mean reward      2767.6
+  [adaptive_red] ippo         ippo_s1        mean reward      2364.2
+  [adaptive_red] ippo         ippo_s2        mean reward      2788.1
+  [adaptive_red] mappo        mappo_s0       mean reward      1900.1
+  [adaptive_red] mappo        mappo_s1       mean reward      2542.9
+  [adaptive_red] mappo        mappo_s2       mean reward      2591.7
+     setting       method  n_models  n_episodes  reward_mean  reward_std  reward_std_across_train_seeds  breach_rate  breach_steps_per_ep  ttd_mean  detect_rate  ttc_mean  contain_rate  downtime_cost  actions_per_ep
+adaptive_red       random         1          50   -192554.66    41758.37                            NaN         1.00               379.72     11.81         0.90     14.81          0.70        3603.00           85.66
+adaptive_red    heuristic         1          50     -2240.34     3302.84                            NaN         0.98                 7.74      3.04         0.98      1.98          0.98        1316.00           72.34
+adaptive_red    random_ma         1          50    -63520.32    23274.02                            NaN         0.98               110.42      4.78         0.96      9.70          0.90        9569.00          227.32
+adaptive_red heuristic_ma         1          50      -216.78     2085.89                            NaN         0.92                 4.54      2.02         0.98      1.70          0.98         869.00           85.78
+adaptive_red          ppo         3         150       796.21     2651.36                         651.06         0.89                 4.45      2.70         0.97      0.10          1.00        2262.67           92.45
+adaptive_red         ippo         3         150      2639.95     1046.08                         239.06         0.68                 1.49      1.80         0.98      0.41          0.99        1941.00          165.71
+adaptive_red        mappo         3         150      2344.91     1067.74                         386.00         0.81                 1.79      2.13         0.98      0.31          1.00        1702.67          161.43

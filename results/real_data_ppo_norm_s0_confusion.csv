@@ -1,0 +1,5 @@
+stage,no_op,block_ip,isolate_machine,patch_system,redirect_traffic,deploy_honeypot,restore_backup
+UNCOMPROMISED,1767,1881,110,1124,1028,2529,1434
+EARLY_INTRUSION,209,274,2,104,155,129,1097
+ESCALATED,139,189,5,89,105,159,744
+BREACHED,261,353,33,198,148,157,1577

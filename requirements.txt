@@ -1,0 +1,9 @@
+gymnasium
+stable-baselines3
+sb3-contrib
+pettingzoo
+torch
+numpy
+pandas
+matplotlib
+scikit-learn

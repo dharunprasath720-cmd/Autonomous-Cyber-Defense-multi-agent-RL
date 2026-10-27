@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Red vs Blue Cyber Defense</title>
+<meta name="description" content="Step-by-step replay of simulated cyber attacks against trained defender agents, with a live reward ledger.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f5f6; --card:#ffffff; --ink:#15181d; --mute:#6a717d; --faint:#9aa1ac; --line:#e6e8eb; --soft:#f1f2f4;
+  --red:#c4405a; --blue:#2f6db3; --pos:#2c8559; --neg:#c0392b;
+  --s0:#86b99a; --s1:#e2b341; --s2:#e07a35; --s3:#c8423b;
+  --sans:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0f1114; --card:#16191e; --ink:#e9ebee; --mute:#8d95a2; --faint:#626a77; --line:#262b33; --soft:#1c2026;
+    --red:#e0607a; --blue:#5b9be0; --pos:#4fbf86; --neg:#ec6b5e; --s0:#5f9c7a; color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#0f1114; --card:#16191e; --ink:#e9ebee; --mute:#8d95a2; --faint:#626a77; --line:#262b33; --soft:#1c2026;
+  --red:#e0607a; --blue:#5b9be0; --pos:#4fbf86; --neg:#ec6b5e; --s0:#5f9c7a; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans);letter-spacing:.005em}
+.page{max-width:1440px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left,0px)) 40px max(16px,env(safe-area-inset-right,0px))}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin:2px 0 12px}
+h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.tag{color:var(--mute);font-size:13px}
+.bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:12px}
+.bar label{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+select,button{font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:7px;padding:5px 9px}
+select{min-width:0}
+button{cursor:pointer;transition:background .12s}
+button:hover{background:var(--soft)}
+button.go{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600;min-width:84px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.scrub{flex:1 1 240px;min-width:180px}
+.scrub .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--mute);text-transform:none;letter-spacing:0}
+input[type=range]{width:100%;accent-color:var(--ink);margin:3px 0 0}
+.layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:12px;align-items:start}
+@media(max-width:1020px){.layout{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.card h2{margin:0 0 8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card h2 .r{font-family:var(--mono);text-transform:none;letter-spacing:0;font-weight:500;color:var(--faint)}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--mute);margin-top:6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+/* feed */
+.feed{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.feed{grid-template-columns:1fr}}
+.feed h3{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.feed h3.r{color:var(--red)} .feed h3.b{color:var(--blue)}
+.list{display:flex;flex-direction:column;gap:6px;height:178px;overflow:auto;padding-right:2px;scrollbar-width:thin}
+.stp{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:2px}
+.item{border-left:3px solid var(--line);padding:3px 8px;font-size:13px;background:var(--soft);border-radius:0 6px 6px 0}
+.item.r{border-left-color:var(--red)} .item.b{border-left-color:var(--blue)}
+.item small{display:block;color:var(--mute);font-size:11.5px;line-height:1.35;margin-top:1px}
+.item.old{opacity:.5}
+.item.new{animation:pop .35s ease-out}
+@keyframes pop{from{background:color-mix(in srgb,var(--ink) 14%,var(--soft));transform:translateX(-3px)}to{background:var(--soft);transform:none}}
+@media (prefers-reduced-motion: reduce){.item.new{animation:none}}
+.quiet{color:var(--faint);font-size:12.5px;font-style:italic;padding:2px 2px}
+/* ledger */
+.lg{display:flex;flex-direction:column;gap:8px}
+.grp{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.gh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;background:var(--soft);font-weight:600;font-size:13px}
+.gh .sub{color:var(--mute);font-weight:400;font-size:12px;margin-left:6px}
+.gh .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}
+.li{display:flex;justify-content:space-between;gap:10px;padding:4px 10px;border-top:1px solid var(--line);font-size:12.5px}
+.li span:first-child{color:var(--ink)} .li small{display:block;color:var(--mute);font-size:11px}
+.amt{font-family:var(--mono);font-weight:500;white-space:nowrap}
+.pos{color:var(--pos)} .neg{color:var(--neg)} .zero{color:var(--faint)}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px;border-top:2px solid var(--ink);margin-top:2px}
+.total b{font-size:13px;font-weight:600}
+.total .amt{font-size:20px;font-weight:600}
+.upd{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:center;text-align:center;margin:2px 0 10px}
+.upd .ul{font-size:10.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.07em}
+.upd .uv{font-family:var(--mono);font-size:19px;font-weight:600}
+.upd .op{color:var(--faint);font-size:17px}
+.chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px}
+.chips div{display:flex;justify-content:space-between;font-size:12px;border-bottom:1px dashed var(--line);padding:2px 0;gap:8px}
+.chips div span:first-child{color:var(--mute)}
+.note{font-size:12px;color:var(--mute);margin:6px 0 0}
+/* lower sections */
+.lower{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:12px;margin-top:12px}
+@media(max-width:1020px){.lower{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:4px 8px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{color:var(--mute);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+th:first-child,td:first-child{text-align:left}
+tr.cur td{background:var(--soft);font-weight:600}
+.log{max-height:170px;overflow:auto;font-size:12.5px;margin-top:6px;border-top:1px solid var(--line)}
+.log div{padding:3px 2px;cursor:pointer;border-bottom:1px dashed var(--line)}
+.log div:hover{background:var(--soft)}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin-top:6px}
+.k div{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;color:var(--mute)}
+.k b{display:block;color:var(--ink);font-size:12.5px;margin-bottom:1px}
+.k b.r{color:var(--red)} .k b.b{color:var(--blue)}
+details summary{cursor:pointer;font-weight:600;font-size:13px}
+.scroll{overflow-x:auto}
+.foot{color:var(--faint);font-size:12px;margin-top:14px}
+.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 4px;color:var(--mute)}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <h1>Red vs Blue: cyber defense replay</h1>
+    <span class="tag">Recorded simulator episodes with trained defender agents. Every reward is traced to the action that earned it.</span>
+  </header>
+
+  <div class="bar">
+    <label>Defender<select id="blue"></select></label>
+    <label>Episode<select id="seed"></select></label>
+    <label>Speed<select id="speed"><option value="3000">Slow</option><option value="1800" selected>Normal</option><option value="900">Fast</option></select></label>
+    <div style="display:flex;gap:6px;align-items:flex-end"><button id="prev" aria-label="Previous step">◀</button><button id="play" class="go">▶ Play</button><button id="next" aria-label="Next step">▶</button></div>
+    <label class="scrub"><span class="row"><span>Step <span id="stepno"></span></span><span>space = play · ← → = step</span></span><input type="range" id="scrub" min="0" value="0" aria-label="Step"></label>
+  </div>
+
+  <div class="layout">
+    <div class="col">
+      <div class="card">
+        <h2>Simulation <span class="r" id="simmeta"></span></h2>
+        <svg id="net" viewBox="0 0 900 470" role="img" aria-label="Network map showing attacker and defender activity"></svg>
+        <div class="legend">
+          <span><i style="background:var(--s0)"></i>clean</span><span><i style="background:var(--s1)"></i>early intrusion</span>
+          <span><i style="background:var(--s2)"></i>escalated</span><span><i style="background:var(--s3)"></i>breached</span>
+          <span>dashed ring isolated · ✓ patched · ◆ decoy · bar = anomaly the defender sees</span>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Live actions <span class="r" id="feedmeta"></span></h2>
+        <div class="feed">
+          <div><h3 class="r">● Red attacker</h3><div class="list" id="redev"></div></div>
+          <div><h3 class="b">● Blue defender</h3><div class="list" id="blueev"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <h2>Reward ledger <span class="r" id="ledmeta"></span></h2>
+        <div class="lg" id="ledger"></div>
+        <div class="total"><b>Reward this step</b><span class="amt" id="rt"></span></div>
+        <p class="note" id="zonesplit"></p>
+      </div>
+      <div class="card">
+        <h2>Running score <span class="r">G = G + r</span></h2>
+        <div class="upd" id="upd"></div>
+        <div class="chips" id="cum"></div>
+        <details><summary>What the learning algorithm does with this</summary>
+          <p class="note">This replay only shows rewards. During training, PPO divides rewards by a running standard deviation of the discounted return, so a −500 penalty becomes about −1 and learning stays stable. It then forms an advantage A = r + γV(s′) − V(s) (smoothed by GAE, γ 0.99, λ 0.95) and makes actions with positive advantage more likely. Without the rescaling the large penalties swamp learning.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="lower">
+    <div class="card">
+      <h2>Episode timeline <span class="r">cumulative reward</span></h2>
+      <svg id="chart" viewBox="0 0 700 150"></svg>
+      <div class="log" id="log"></div>
+    </div>
+    <div class="card">
+      <h2>Same episode, every defender</h2>
+      <div class="scroll"><table id="score"></table></div>
+      <p class="note" id="scorenote"></p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h2>How the two sides interact</h2>
+    <div class="k">
+      <div><b class="r">Phishing</b>Lands on workstations. Chance = vector base × host vulnerability × zone pressure.</div>
+      <div><b class="r">Malware</b>Hits most hosts; fastest against unpatched IoT and workstations.</div>
+      <div><b class="r">DDoS</b>Targets servers and cloud; redirect_traffic cuts its landing chance ×0.1.</div>
+      <div><b class="r">Escalation and theft</b>EARLY → ESCALATED → BREACHED. Faster on weakly patched hosts, databases and cloud.</div>
+      <div><b class="r">Lateral movement</b>An escalated host raises intrusion odds in the next zone (DMZ → Internal → Data tier).</div>
+      <div><b class="b">block_ip</b>Reverts an early intrusion (70%); landing chance ×0.25 for 5 steps.</div>
+      <div><b class="b">isolate_machine</b>Freezes a host for 5 steps. −200 downtime.</div>
+      <div><b class="b">patch_system</b>Vulnerability ×0.6 and landing chance halved.</div>
+      <div><b class="b">redirect_traffic</b>Scrubs traffic for 4 steps; strong against DDoS.</div>
+      <div><b class="b">deploy_honeypot</b>20-step decoy (max 3): 80% of landings on it are trapped, +50.</div>
+      <div><b class="b">restore_backup</b>Cleans a host. −50 downtime. The only exit from breached.</div>
+    </div>
+    <details style="margin-top:8px"><summary>What this demo does and does not show</summary>
+      <p class="note">The defender sees only noisy anomaly scores, smoothed over time, plus its own flags. The true stage (node colour) is hidden from it, which is why it sometimes acts on a false alarm or misses an intrusion. This is a custom simulator, not CybORG or CAGE; its numbers are not comparable to those benchmarks and make no claim about real-world defense.</p>
+    </details>
+  </div>
+  <p class="foot">Simulated data only. Defenders: PPO (single agent), MAPPO (three zone agents, three actions per step) and a rule-based heuristic.</p>
+</div>
+
+<script id="data" type="application/json">/*DATA*/</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+D.scenarios.forEach(sc=>sc.steps.forEach(st=>{
+  st.traffic=st.traffic.map(x=>x/100); st.user=st.user.map(x=>x/100);
+  ['iso','patched','honey','block','redirect'].forEach(k=>{ if(!st[k]) st[k]=[0,0,0,0,0,0,0,0]; });
+  (st.busy||[]).forEach(([host,vec,iso])=>st.ev.push({side:'red',host,vec,outcome:'busy',isolated:!!iso}));
+  st.stage.forEach((g,h)=>{ if(g===3) st.ev.push({side:'reward',kind:'breach',host:h,amt:-500}); });
+}));
+const STAGE=['clean','early intrusion','escalated','breached'];
+const SCOL=['var(--s0)','var(--s1)','var(--s2)','var(--s3)'];
+const VEC=['malware','phishing','DDoS'];
+const TY={server:'SRV',workstation:'WS',database:'DB',cloud:'CLD',iot:'IoT'};
+const AB=['no_op','block_ip','isolate','patch','redirect','honeypot','restore'];
+const ACOL=['#9aa1ac','#2f6db3','#6f4fb0','#2c8559','#0b7285','#c28a0a','#c4405a'];
+const $=id=>document.getElementById(id);
+let cur=null,i=0,timer=null,CUM=null;
+
+// map layout
+const ZX=[240,480,720], ZW=196, pos={};
+D.zones.forEach((_,z)=>{ D.hosts.filter(h=>h.zone===z).forEach((h,k)=>{ pos[h.id]=[ZX[z],112+k*92]; }); });
+const RED=[66,204], BLUE=[480,436];
+const pct=x=>Math.round(x*100)+'%';
+const hostName=h=>{const H=D.hosts[h];return `H${h} (${TY[H.type]}, ${D.zones[H.zone]})`};
+const fmt=v=>(v>0?'+':v<0?'−':'')+Math.abs(Math.round(v)).toLocaleString();
+const cls=v=>v>0?'pos':v<0?'neg':'zero';
+
+/* ---------- explanations ---------- */
+function redText(e){
+  const h=hostName(e.host), v=VEC[e.vec];
+  const mods=(e.mods||[]).map(m=>({blocked:'IP block ×0.25',redirected:'traffic scrubbing',patched:'patched ×0.5'}[m]||m));
+  const md=mods.length?` Defenses active: ${mods.join(', ')}.`:'';
+  switch(e.outcome){
+    case 'landed': return [`${v} lands on ${h}`,`Foothold gained. Success chance was ${pct(e.p)}.${md}`];
+    case 'failed': return [`${v} on ${h} fails`,`Success chance was ${pct(e.p)}.${md}`];
+    case 'trapped': return [`${v} trapped by decoy on ${h}`,`Honeypot caught it (+50 detection).`];
+    case 'busy': return [`${v} wasted on ${h}`,e.isolated?'Host is isolated.':'Host already compromised.'];
+    case 'progressed': return e.after===2?[`Privilege escalation on ${h}`,`EARLY → ESCALATED. Raises odds in the next zone.`]
+                                         :[`Data theft on ${h}`,`ESCALATED → BREACHED. −500 per step until restored.`];
+  }
+  return [e.outcome,''];
+}
+function blueText(e,prev){
+  const h=hostName(e.host), a=D.actions[e.action];
+  const ob=prev?((prev.traffic[e.host]+prev.user[e.host])/2):0.1;
+  const saw=`Saw anomaly ${ob.toFixed(2)}; true stage was ${STAGE[e.before]}.`;
+  switch(a){
+    case 'block_ip':
+      if(e.before===1&&e.after===0) return [`block_ip on ${h}: intruder removed`,saw];
+      if(e.before===2&&e.after===1) return [`block_ip on ${h}: pushed back to early`,saw];
+      if(e.before===0) return [`block_ip on ${h}: pre-emptive`,`${saw} Landing chance ×0.25 for 5 steps.`];
+      return [`block_ip on ${h}: intruder survived`,saw];
+    case 'isolate_machine': return [`isolate on ${h}: frozen 5 steps`,`${saw} Downtime −200.`];
+    case 'patch_system': return [`patch on ${h}: hardened`,`${saw} Vulnerability ×0.6.`];
+    case 'redirect_traffic': return e.before>=1&&e.after===0?[`redirect on ${h}: attack scrubbed`,saw]:[`redirect on ${h}: scrubbing 4 steps`,saw];
+    case 'deploy_honeypot': return [`honeypot on ${h}: decoy up 20 steps`,`${saw}${e.detected?' It exposed an intruder.':''}`];
+    case 'restore_backup':
+      if(e.before===3) return [`restore on ${h}: breach resolved`,`${saw} Penalty stops.`];
+      if(e.before>=1) return [`restore on ${h}: intruder wiped`,saw];
+      return [`restore on ${h}: wasted (host was clean)`,saw];
+  }
+  return [a,''];
+}
+
+/* ---------- ledger ---------- */
+const KINDS=[
+ ['detect','Early detection',+50],['prevent','Attack reversed before breach',+100],['trap','Honeypot trap',+50],
+ ['step_cost','Action cost',-1],['downtime_isolate','Downtime: isolate',-200],['downtime_restore','Downtime: restore',-50],['breach','Breach penalty',-500]];
+const KLABEL=Object.fromEntries(KINDS.map(k=>[k[0],k[1]]));
+const KRULE={detect:'first relevant action on an early/escalated host',prevent:'host returned to clean before breach',trap:'attacker caught by a decoy',
+  step_cost:'every action except no_op',downtime_isolate:'service offline',downtime_restore:'brief outage (design choice)',breach:'per breached host, every step'};
+function buildLedger(){
+  let run=0; const tot={},cnt={}; KINDS.forEach(k=>{tot[k[0]]=0;cnt[k[0]]=0});
+  CUM=cur.steps.map(s=>{ s.ev.filter(e=>e.side==='reward').forEach(e=>{tot[e.kind]+=e.amt;cnt[e.kind]++;run+=e.amt;}); return {run,tot:{...tot},cnt:{...cnt}}; });
+}
+function groupsFor(step){
+  const items=step.ev.filter(e=>e.side==='reward'), used=new Set(), groups=[];
+  step.ev.filter(e=>e.side==='blue'&&D.actions[e.action]!=='no_op').forEach(b=>{
+    const its=items.filter(e=>e.host===b.host&&['step_cost','detect','prevent','downtime_isolate','downtime_restore'].includes(e.kind)&&!used.has(e));
+    its.forEach(e=>used.add(e));
+    groups.push({color:ACOL[b.action],title:`${AB[b.action]} on H${b.host}`,sub:D.zones[D.hosts[b.host].zone],items:its});
+  });
+  const traps=items.filter(e=>e.kind==='trap'); traps.forEach(e=>used.add(e));
+  if(traps.length) groups.push({color:ACOL[5],title:'Decoy payoff',sub:'deployed earlier',items:traps});
+  const br=items.filter(e=>e.kind==='breach'); br.forEach(e=>used.add(e));
+  if(br.length) groups.push({color:'var(--s3)',title:`Standing penalty: ${br.length} breached host${br.length>1?'s':''}`,sub:'not caused by this step\'s action',items:br,collapse:true});
+  const rest=items.filter(e=>!used.has(e)); if(rest.length) groups.push({color:'#9aa1ac',title:'Other',sub:'',items:rest});
+  return groups;
+}
+function renderLedger(){
+  const s=cur.steps[i], groups=groupsFor(s);
+  const total=s.ev.filter(e=>e.side==='reward').reduce((a,e)=>a+e.amt,0);
+  $('ledger').innerHTML=groups.length?groups.map(g=>{
+    const sub=g.items.reduce((a,e)=>a+e.amt,0);
+    const rows=g.collapse
+      ? `<div class="li"><span>${g.items.length} × −500<small>${g.items.map(e=>'H'+e.host).join(', ')}</small></span><span class="amt ${cls(sub)}">${fmt(sub)}</span></div>`
+      : g.items.map(e=>`<div class="li"><span>${KLABEL[e.kind]}<small>${KRULE[e.kind]}</small></span><span class="amt ${cls(e.amt)}">${fmt(e.amt)}</span></div>`).join('')
+        || '<div class="li"><span class="quiet">no reward lines</span><span class="amt zero">0</span></div>';
+    return `<div class="grp"><div class="gh"><span><span class="dot" style="background:${g.color}"></span>${g.title}<span class="sub">${g.sub}</span></span><span class="amt ${cls(sub)}">${fmt(sub)}</span></div>${rows}</div>`;
+  }).join(''):'<div class="quiet">No reward rule fired this step: no action, no breach, nothing trapped.</div>';
+  $('rt').className='amt '+cls(total); $('rt').textContent=fmt(total)||'0';
+  const zs=[0,0,0]; s.ev.filter(e=>e.side==='reward').forEach(e=>{zs[D.hosts[e.host].zone]+=e.amt});
+  $('zonesplit').textContent=`By zone: DMZ ${fmt(zs[0])||0} · Internal ${fmt(zs[1])||0} · Data tier ${fmt(zs[2])||0}. Team reward is their sum.`;
+  $('ledmeta').textContent=`step ${i+1}`;
+  const before=i?CUM[i-1].run:0, after=CUM[i].run;
+  $('upd').innerHTML=`<div><div class="ul">before</div><div class="uv">${fmt(before)||0}</div></div><div class="op">+</div>
+    <div><div class="ul">this step</div><div class="uv ${cls(total)}">${fmt(total)||0}</div></div><div class="op">=</div>
+    <div><div class="ul">after</div><div class="uv">${fmt(after)||0}</div></div>`;
+  $('cum').innerHTML=KINDS.map(([kd,label])=>`<div><span>${label}${CUM[i].cnt[kd]?` ×${CUM[i].cnt[kd]}`:''}</span><span class="amt ${cls(CUM[i].tot[kd])}">${fmt(CUM[i].tot[kd])||0}</span></div>`).join('');
+}
+
+/* ---------- map ---------- */
+function el(tag,attrs,txt){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const k in attrs)n.setAttribute(k,attrs[k]);if(txt!=null)n.textContent=txt;return n}
+function renderMap(){
+  const s=cur.steps[i], svg=$('net'); svg.innerHTML='';
+  svg.insertAdjacentHTML('afterbegin','<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--faint)"/></marker></defs>');
+  D.zones.forEach((name,z)=>{
+    svg.appendChild(el('rect',{x:ZX[z]-ZW/2,y:44,width:ZW,height:322,rx:12,fill:'none',stroke:'var(--line)','stroke-width':1.6}));
+    svg.appendChild(el('text',{x:ZX[z],y:68,'text-anchor':'middle',fill:'var(--mute)','font-size':13,'font-weight':600,'letter-spacing':'.06em'},name.toUpperCase()));
+    if(z<2){ const lat=D.hosts.some(h=>h.zone===z&&s.stage[h.id]>=2&&!s.iso[h.id]);
+      svg.appendChild(el('path',{d:`M${ZX[z]+ZW/2+6} 205 L${ZX[z+1]-ZW/2-6} 205`,stroke:lat?'var(--s2)':'var(--line)','stroke-width':lat?3.5:1.6,'marker-end':'url(#ar)'}));
+      if(lat) svg.appendChild(el('text',{x:(ZX[z]+ZX[z+1])/2,y:192,'text-anchor':'middle',fill:'var(--s2)','font-size':11},'lateral pressure')); }
+  });
+  svg.appendChild(el('rect',{x:RED[0]-48,y:RED[1]-30,width:96,height:60,rx:9,fill:'var(--red)'}));
+  svg.appendChild(el('text',{x:RED[0],y:RED[1]-2,'text-anchor':'middle',fill:'#fff','font-weight':700,'font-size':14},'RED'));
+  svg.appendChild(el('text',{x:RED[0],y:RED[1]+16,'text-anchor':'middle',fill:'#fff','font-size':10.5,opacity:.85},'attacker'));
+  svg.appendChild(el('rect',{x:BLUE[0]-150,y:BLUE[1]-22,width:300,height:44,rx:9,fill:'var(--blue)'}));
+  svg.appendChild(el('text',{x:BLUE[0],y:BLUE[1]-2,'text-anchor':'middle',fill:'#fff','font-weight':700,'font-size':14},'BLUE'));
+  svg.appendChild(el('text',{x:BLUE[0],y:BLUE[1]+14,'text-anchor':'middle',fill:'#fff','font-size':10.5,opacity:.85},D.blues[cur.blue]));
+  const reds=s.ev.filter(e=>e.side==='red');
+  reds.forEach(e=>{ if(e.outcome==='progressed')return; const [x,y]=pos[e.host];
+    const col=e.outcome==='landed'?'var(--s3)':e.outcome==='trapped'?'var(--blue)':'var(--faint)';
+    svg.appendChild(el('line',{x1:RED[0]+48,y1:RED[1],x2:x-24,y2:y,stroke:col,'stroke-width':e.outcome==='landed'?3:1.4,'stroke-dasharray':(e.outcome==='busy'||e.outcome==='failed')?'3 5':'0',opacity:e.outcome==='busy'?.3:.85}));});
+  s.ev.filter(e=>e.side==='blue'&&D.actions[e.action]!=='no_op').forEach(e=>{ const [x,y]=pos[e.host];
+    svg.appendChild(el('line',{x1:BLUE[0]+(x-BLUE[0])*.3,y1:BLUE[1]-22,x2:x,y2:y+24,stroke:'var(--blue)','stroke-width':2.6,opacity:.8}));});
+  D.hosts.forEach(H=>{
+    const [x,y]=pos[H.id], st=s.stage[H.id], g=el('g',{});
+    if(s.iso[H.id]) g.appendChild(el('circle',{cx:x,cy:y,r:32,fill:'none',stroke:'var(--blue)','stroke-width':2.4,'stroke-dasharray':'5 4'}));
+    g.appendChild(el('circle',{cx:x,cy:y,r:24,fill:SCOL[st],stroke:'var(--card)','stroke-width':2}));
+    g.appendChild(el('text',{x,y:y+4.5,'text-anchor':'middle',fill:'#fff','font-weight':700,'font-size':12},TY[H.type]));
+    g.appendChild(el('text',{x:x-40,y:y-22,'text-anchor':'middle',fill:'var(--faint)','font-size':10.5},'H'+H.id));
+    const a=Math.min(1,(s.traffic[H.id]+s.user[H.id])/2);
+    g.appendChild(el('rect',{x:x+33,y:y-21,width:6,height:42,rx:2,fill:'var(--soft)'}));
+    g.appendChild(el('rect',{x:x+33,y:y+21-42*a,width:6,height:42*a,rx:2,fill:a>.45?'var(--s2)':'var(--faint)'}));
+    let bx=x-24; const by=y+42; const badge=(t,c)=>{g.appendChild(el('text',{x:bx,y:by,fill:c,'font-size':12,'font-weight':700},t));bx+=16;};
+    if(s.patched[H.id])badge('✓','var(--pos)'); if(s.honey[H.id])badge('◆','var(--blue)'); if(s.block[H.id])badge('⛔','var(--mute)'); if(s.redirect[H.id])badge('⇄','var(--mute)');
+    svg.appendChild(g);
+    s.ev.filter(e=>e.side==='blue'&&e.host===H.id&&D.actions[e.action]!=='no_op').forEach(e=>svg.appendChild(el('text',{x,y:y-34,'text-anchor':'middle',fill:'var(--blue)','font-size':11,'font-weight':700},AB[e.action])));
+    s.ev.filter(e=>e.side==='red'&&e.host===H.id&&e.outcome==='landed').forEach(()=>svg.appendChild(el('text',{x,y:y-34,'text-anchor':'middle',fill:'var(--s3)','font-size':11,'font-weight':700},'foothold')));
+  });
+  $('simmeta').textContent=`step ${i+1} of ${cur.steps.length} · breached now ${s.stage.filter(x=>x===3).length}`;
+}
+
+/* ---------- live feed ---------- */
+function renderFeed(){
+  const R=$('redev'), B=$('blueev'); let rh='', bh='';
+  for(let k=i;k>=Math.max(0,i-2);k--){
+    const st=cur.steps[k], pv=k?cur.steps[k-1]:null, old=k!==i?' old':'', nw=k===i?' new':'';
+    const reds=st.ev.filter(e=>e.side==='red'&&e.outcome!=='busy'), busy=st.ev.filter(e=>e.side==='red'&&e.outcome==='busy').length;
+    const blues=st.ev.filter(e=>e.side==='blue'&&D.actions[e.action]!=='no_op');
+    rh+=`<div class="stp">STEP ${k+1}</div>`;
+    reds.filter(e=>e.outcome!=='failed'||k===i).forEach(e=>{const [t,d]=redText(e);rh+=`<div class="item r${old}${nw}">${t}<small>${d}</small></div>`;});
+    if(busy&&k===i) rh+=`<div class="quiet${old}">${busy} attempt${busy>1?'s':''} wasted on compromised or isolated hosts</div>`;
+    if(!reds.length&&!busy) rh+=`<div class="quiet${old}">no attack activity</div>`;
+    bh+=`<div class="stp">STEP ${k+1}</div>`;
+    blues.forEach(e=>{const [t,d]=blueText(e,pv);bh+=`<div class="item b${old}${nw}">${t}<small>${d}</small></div>`;});
+    if(!blues.length) bh+=`<div class="quiet${old}">${cur.blue==='none'?'no defense':'no action (no_op)'}</div>`;
+  }
+  R.innerHTML=rh; B.innerHTML=bh; R.scrollTop=0; B.scrollTop=0;
+  $('feedmeta').textContent=`showing steps ${Math.max(1,i-1)}–${i+1}`;
+}
+
+/* ---------- timeline, comparison ---------- */
+function drawChart(){
+  const svg=$('chart'); svg.innerHTML=''; const st=cur.steps,n=st.length,W=700,H=150,L=8,R=8,T=8,B=14;
+  let c=0; const cum=st.map(s=>c+=s.rew); const lo=Math.min(0,...cum),hi=Math.max(0,...cum);
+  const X=k=>L+(W-L-R)*k/(n-1), Y=v=>T+(H-T-B)*(1-(v-lo)/((hi-lo)||1));
+  svg.appendChild(el('line',{x1:L,x2:W-R,y1:Y(0),y2:Y(0),stroke:'var(--line)'}));
+  st.forEach((s,k)=>{const b=s.stage.filter(x=>x===3).length; if(b)svg.appendChild(el('rect',{x:X(k)-1.5,y:H-B-b*4,width:3,height:b*4,fill:'var(--s3)',opacity:.55}));});
+  svg.appendChild(el('path',{d:'M'+cum.map((v,k)=>`${X(k)} ${Y(v)}`).join('L'),fill:'none',stroke:'var(--ink)','stroke-width':1.6}));
+  svg.appendChild(el('text',{x:W-R,y:H-1,'text-anchor':'end','font-size':10.5,fill:'var(--mute)'},`final ${Math.round(cum[n-1]).toLocaleString()}`));
+  svg.appendChild(el('g',{id:'marker'}));
+  const log=$('log'); log.innerHTML='';
+  st.forEach((s,k)=>{const pv=k?st[k-1]:null; s.ev.forEach(e=>{let t=null;
+    if(e.side==='red'&&['landed','trapped','progressed'].includes(e.outcome)) t=['r',redText(e)[0]];
+    if(e.side==='blue'&&D.actions[e.action]!=='no_op') t=['b',blueText(e,pv)[0]];
+    if(t) log.insertAdjacentHTML('beforeend',`<div data-k="${k}"><b>${k+1}</b> <span class="${t[0]==='r'?'neg':'pos'}" style="color:var(--${t[0]==='r'?'red':'blue'})">●</span> ${t[1]}</div>`);});});
+  log.onclick=e=>{const d=e.target.closest('div[data-k]'); if(d)go(+d.dataset.k);};
+}
+function drawMarker(){const g=$('marker'); if(!g)return; g.innerHTML=''; const n=cur.steps.length,x=8+(700-16)*i/(n-1);
+  g.appendChild(el('line',{x1:x,x2:x,y1:4,y2:136,stroke:'var(--blue)','stroke-width':1.6}));}
+function drawScore(){
+  const rows=D.scenarios.filter(s=>s.seed===cur.seed);
+  $('score').innerHTML='<tr><th>Defender</th><th>Reward</th><th>Breach-steps</th><th>Intrusions</th><th>Traps</th><th>Actions</th></tr>'+
+    rows.map(s=>`<tr class="${s.blue===cur.blue?'cur':''}"><td>${D.blues[s.blue]}</td><td>${s.summary.reward.toLocaleString()}</td><td>${s.summary.breach_steps}</td><td>${s.summary.intrusions}</td><td>${s.summary.trapped}</td><td>${s.summary.actions}</td></tr>`).join('');
+  $('scorenote').textContent='One episode only, so treat it as an illustration, not a benchmark. MAPPO acts three times per step (one per zone); the others once.';
+}
+
+/* ---------- controls ---------- */
+function render(){ renderMap(); renderFeed(); renderLedger(); drawMarker(); }
+function go(n){ i=Math.max(0,Math.min(cur.steps.length-1,n)); $('scrub').value=i; $('stepno').textContent=`${i+1} / ${cur.steps.length}`; render(); }
+function stop(){ if(timer){clearInterval(timer);timer=null;} $('play').textContent='▶ Play'; }
+function start(){ if(i>=cur.steps.length-1)i=0; $('play').textContent='❚❚ Pause'; timer=setInterval(()=>{ if(i>=cur.steps.length-1){stop();return;} go(i+1); },+$('speed').value); }
+function toggle(){ timer?stop():start(); }
+function pick(){ cur=D.scenarios.find(s=>s.blue===$('blue').value&&s.seed===+$('seed').value); $('scrub').max=cur.steps.length-1; stop(); i=0; buildLedger(); drawChart(); drawScore(); go(0); }
+function setup(){
+  $('blue').innerHTML=Object.entries(D.blues).map(([k,v])=>`<option value="${k}">${v}</option>`).join(''); $('blue').value='mappo';
+  const seeds=[...new Set(D.scenarios.map(s=>s.seed))]; $('seed').innerHTML=seeds.map((s,k)=>`<option value="${s}">Episode ${k+1}</option>`).join('');
+  ['blue','seed'].forEach(id=>$(id).onchange=pick);
+  $('play').onclick=toggle; $('prev').onclick=()=>go(i-1); $('next').onclick=()=>go(i+1); $('scrub').oninput=e=>go(+e.target.value);
+  $('speed').onchange=()=>{ if(timer){stop();start();} };
+  document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)&&e.target.type!=='range')return;
+    if(e.key===' '){e.preventDefault();toggle();} else if(e.key==='ArrowRight'){go(i+1);} else if(e.key==='ArrowLeft'){go(i-1);} });
+  pick();
+}
+setup();
+</script>
+</body>
+</html>
