@@ -31,7 +31,7 @@ finding, as long as it is reported honestly and the limits are stated. See §9 f
 GUIDE.md                  <- this file
 README.md                 <- setup + exact commands + headline table
 report/report.md          <- the formal report (abstract ... conclusion)
-showcase/demo.html        <- INTERACTIVE Red-vs-Blue replay (open this!)
+index.html                <- INTERACTIVE Red-vs-Blue replay (open this!)
 env/                      <- the simulator (core.py) and the Gymnasium / PettingZoo wrappers
 agents/                   <- rule-based heuristic + neural-network inference code
 training/                 <- training scripts (PPO, IPPO, MAPPO)
