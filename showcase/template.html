@@ -49,12 +49,10 @@ input[type=range]{width:100%;accent-color:var(--ink);margin:2px 0 0}
 .mapwrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
 svg{display:block;width:100%;height:auto}
 #net{height:100%;max-height:100%}
-.legend{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:11.5px;color:var(--mute);margin:4px 0 8px}
+.legend{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:11.5px;color:var(--mute);margin:6px 0 0}
 .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
-.now{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--line);padding-top:8px}
-.now h3,.feed h3{margin:0 0 5px;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
-.now h3.r,.feed h3.r{color:var(--red)} .now h3.b,.feed h3.b{color:var(--blue)}
-.nowlist{display:flex;flex-direction:column;gap:5px;max-height:132px;overflow:auto;scrollbar-width:thin}
+.feed h3{margin:0 0 5px;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.feed h3.r{color:var(--red)} .feed h3.b{color:var(--blue)}
 /* tabs */
 .tabhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 12px;border-bottom:1px solid var(--line);padding:0 10px 0 6px}
 .tabs{display:flex;gap:0;flex-wrap:wrap}
@@ -70,7 +68,7 @@ svg{display:block;width:100%;height:auto}
 .two h4 .r{font-family:var(--mono);text-transform:none;letter-spacing:0;color:var(--faint);font-weight:500}
 /* feed + items */
 .feed{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:620px){.feed,.now{grid-template-columns:1fr}}
+@media(max-width:620px){.feed{grid-template-columns:1fr}}
 .list{display:flex;flex-direction:column;gap:6px}
 .stp{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:3px}
 .item{border-left:3px solid var(--line);padding:3px 8px;font-size:13px;background:var(--soft);border-radius:0 6px 6px 0}
@@ -128,8 +126,7 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
   .main{grid-template-columns:1fr}
   #net{height:auto}
   .pane{overflow:visible}
-  .nowlist{max-height:none}
-}
+  }
 </style>
 </head>
 <body>
@@ -144,21 +141,17 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
     <label>Episode<select id="seed"></select></label>
     <label>Speed<select id="speed"><option value="4500">Slow</option><option value="2600" selected>Normal</option><option value="1400">Fast</option></select></label>
     <div style="display:flex;gap:6px;align-items:flex-end"><button id="prev" aria-label="Previous step">◀</button><button id="play" class="go">▶ Play</button><button id="next" aria-label="Next step">▶</button></div>
-    <label class="scrub"><span class="row"><span>Step <span id="stepno"></span></span><span>space play · ← → step · 1–5 tabs</span></span><input type="range" id="scrub" min="0" value="0" aria-label="Step"></label>
+    <label class="scrub"><span class="row"><span>Step <span id="stepno"></span></span><span>space play · ← → step · 1–6 tabs</span></span><input type="range" id="scrub" min="0" value="0" aria-label="Step"></label>
   </div>
 
   <div class="main">
     <section class="half left card">
       <div class="cap"><span>Simulation</span><span class="r" id="simmeta"></span></div>
-      <div class="mapwrap"><svg id="net" viewBox="0 0 900 470" role="img" aria-label="Network map showing attacker and defender activity"></svg></div>
+      <div class="mapwrap"><svg id="net" viewBox="0 0 900 760" role="img" aria-label="Network map showing attacker and defender activity"></svg></div>
       <div class="legend">
         <span><i style="background:var(--s0)"></i>clean</span><span><i style="background:var(--s1)"></i>early intrusion</span>
         <span><i style="background:var(--s2)"></i>escalated</span><span><i style="background:var(--s3)"></i>breached</span>
         <span>dashed ring isolated · ✓ patched · ◆ decoy · bar = anomaly the defender sees</span>
-      </div>
-      <div class="now">
-        <div><h3 class="r">● Red, this step</h3><div class="nowlist" id="nowRed"></div></div>
-        <div><h3 class="b">● Blue, this step</h3><div class="nowlist" id="nowBlue"></div></div>
       </div>
     </section>
 
@@ -166,10 +159,11 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
       <div class="tabhead">
         <div class="tabs" role="tablist" aria-label="Panels">
           <button class="tab" role="tab" data-tab="ledger"><kbd>1</kbd>Reward ledger</button>
-          <button class="tab" role="tab" data-tab="actions"><kbd>2</kbd>Live actions</button>
-          <button class="tab" role="tab" data-tab="timeline"><kbd>3</kbd>Timeline</button>
-          <button class="tab" role="tab" data-tab="compare"><kbd>4</kbd>Compare</button>
-          <button class="tab" role="tab" data-tab="guide"><kbd>5</kbd>Guide</button>
+          <button class="tab" role="tab" data-tab="odds"><kbd>2</kbd>Attack odds</button>
+          <button class="tab" role="tab" data-tab="actions"><kbd>3</kbd>Live actions</button>
+          <button class="tab" role="tab" data-tab="timeline"><kbd>4</kbd>Timeline</button>
+          <button class="tab" role="tab" data-tab="compare"><kbd>5</kbd>Compare</button>
+          <button class="tab" role="tab" data-tab="guide"><kbd>6</kbd>Guide</button>
         </div>
         <div class="status" id="status"></div>
       </div>
@@ -188,6 +182,22 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
             <div class="chips" id="cum"></div>
             <details><summary>What the learning algorithm does with this</summary>
               <p class="note">This replay only shows rewards. During training, PPO divides rewards by a running standard deviation of the discounted return, so a −500 penalty becomes about −1 and learning stays stable. It then forms an advantage A = r + γV(s′) − V(s) (smoothed by GAE, γ 0.99, λ 0.95) and makes actions with positive advantage more likely. Without the rescaling the large penalties swamp learning.</p>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <div class="pane" id="pane-odds" role="tabpanel" hidden>
+        <div class="two">
+          <div>
+            <h4>Probability calculation <span class="r" id="oddsmeta"></span></h4>
+            <div class="lg" id="oddsCalc"></div>
+          </div>
+          <div>
+            <h4>Roll results <span class="r">this step and running</span></h4>
+            <div id="oddsSum"></div>
+            <details open><summary>How to read a roll</summary>
+              <p class="note">Each chance is turned into an outcome by drawing a random number u between 0 and 1. The event happens when u is below the probability P. The replay shows the exact draw the simulator made, so you can check every outcome by hand. Over many rolls the hit rate should land close to the average P.</p>
             </details>
           </div>
         </div>
@@ -255,10 +265,11 @@ const ACOL=['#9aa1ac','#2f6db3','#6f4fb0','#2c8559','#0b7285','#c28a0a','#c4405a
 const $=id=>document.getElementById(id);
 let cur=null,i=0,timer=null,CUM=null;
 
-// map layout
-const ZX=[240,480,720], ZW=196, pos={};
-D.zones.forEach((_,z)=>{ D.hosts.filter(h=>h.zone===z).forEach((h,k)=>{ pos[h.id]=[ZX[z],112+k*92]; }); });
-const RED=[66,204], BLUE=[480,436];
+// map layout (fixed 900x760 canvas, scaled to fill the left half)
+const ZX=[236,480,724], ZW=190, pos={};
+const HY=[170,340,510];
+D.zones.forEach((_,z)=>{ D.hosts.filter(h=>h.zone===z).forEach((h,k)=>{ pos[h.id]=[ZX[z],HY[k]]; }); });
+const RED=[66,340], BLUE=[480,712];
 const pct=x=>Math.round(x*100)+'%';
 const hostName=h=>{const H=D.hosts[h];return `H${h} (${TY[H.type]}, ${D.zones[H.zone]})`};
 const fmt=v=>(v>0?'+':v<0?'−':'')+Math.abs(Math.round(v)).toLocaleString();
@@ -354,38 +365,39 @@ function renderMap(){
   const s=cur.steps[i], svg=$('net'); svg.innerHTML='';
   svg.insertAdjacentHTML('afterbegin','<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--faint)"/></marker></defs>');
   D.zones.forEach((name,z)=>{
-    svg.appendChild(el('rect',{x:ZX[z]-ZW/2,y:44,width:ZW,height:322,rx:12,fill:'none',stroke:'var(--line)','stroke-width':1.6}));
-    svg.appendChild(el('text',{x:ZX[z],y:68,'text-anchor':'middle',fill:'var(--mute)','font-size':13,'font-weight':600,'letter-spacing':'.06em'},name.toUpperCase()));
+    svg.appendChild(el('rect',{x:ZX[z]-ZW/2,y:52,width:ZW,height:596,rx:14,fill:'none',stroke:'var(--line)','stroke-width':2}));
+    svg.appendChild(el('text',{x:ZX[z],y:86,'text-anchor':'middle',fill:'var(--mute)','font-size':16,'font-weight':600,'letter-spacing':'.07em'},name.toUpperCase()));
     if(z<2){ const lat=D.hosts.some(h=>h.zone===z&&s.stage[h.id]>=2&&!s.iso[h.id]);
-      svg.appendChild(el('path',{d:`M${ZX[z]+ZW/2+6} 205 L${ZX[z+1]-ZW/2-6} 205`,stroke:lat?'var(--s2)':'var(--line)','stroke-width':lat?3.5:1.6,'marker-end':'url(#ar)'}));
-      if(lat) svg.appendChild(el('text',{x:(ZX[z]+ZX[z+1])/2,y:192,'text-anchor':'middle',fill:'var(--s2)','font-size':11},'lateral pressure')); }
+      svg.appendChild(el('path',{d:`M${ZX[z]+ZW/2+6} 340 L${ZX[z+1]-ZW/2-6} 340`,stroke:lat?'var(--s2)':'var(--line)','stroke-width':lat?4:2,'marker-end':'url(#ar)'}));
+      if(lat) svg.appendChild(el('text',{x:(ZX[z]+ZX[z+1])/2,y:322,'text-anchor':'middle',fill:'var(--s2)','font-size':12.5,'font-weight':600},'lateral'));
+      if(lat) svg.appendChild(el('text',{x:(ZX[z]+ZX[z+1])/2,y:360,'text-anchor':'middle',fill:'var(--s2)','font-size':12.5,'font-weight':600},'pressure')); }
   });
-  svg.appendChild(el('rect',{x:RED[0]-48,y:RED[1]-30,width:96,height:60,rx:9,fill:'var(--red)'}));
-  svg.appendChild(el('text',{x:RED[0],y:RED[1]-2,'text-anchor':'middle',fill:'#fff','font-weight':700,'font-size':14},'RED'));
-  svg.appendChild(el('text',{x:RED[0],y:RED[1]+16,'text-anchor':'middle',fill:'#fff','font-size':10.5,opacity:.85},'attacker'));
-  svg.appendChild(el('rect',{x:BLUE[0]-150,y:BLUE[1]-22,width:300,height:44,rx:9,fill:'var(--blue)'}));
-  svg.appendChild(el('text',{x:BLUE[0],y:BLUE[1]-2,'text-anchor':'middle',fill:'#fff','font-weight':700,'font-size':14},'BLUE'));
-  svg.appendChild(el('text',{x:BLUE[0],y:BLUE[1]+14,'text-anchor':'middle',fill:'#fff','font-size':10.5,opacity:.85},D.blues[cur.blue]));
+  svg.appendChild(el('rect',{x:RED[0]-48,y:RED[1]-36,width:96,height:72,rx:10,fill:'var(--red)'}));
+  svg.appendChild(el('text',{x:RED[0],y:RED[1]-2,'text-anchor':'middle',fill:'#fff','font-weight':700,'font-size':18},'RED'));
+  svg.appendChild(el('text',{x:RED[0],y:RED[1]+20,'text-anchor':'middle',fill:'#fff','font-size':12.5,opacity:.85},'attacker'));
+  svg.appendChild(el('rect',{x:BLUE[0]-175,y:BLUE[1]-28,width:350,height:56,rx:10,fill:'var(--blue)'}));
+  svg.appendChild(el('text',{x:BLUE[0],y:BLUE[1]-3,'text-anchor':'middle',fill:'#fff','font-weight':700,'font-size':18},'BLUE'));
+  svg.appendChild(el('text',{x:BLUE[0],y:BLUE[1]+18,'text-anchor':'middle',fill:'#fff','font-size':12.5,opacity:.85},D.blues[cur.blue]));
   const reds=s.ev.filter(e=>e.side==='red');
   reds.forEach(e=>{ if(e.outcome==='progressed')return; const [x,y]=pos[e.host];
     const col=e.outcome==='landed'?'var(--s3)':e.outcome==='trapped'?'var(--blue)':'var(--faint)';
-    svg.appendChild(el('line',{x1:RED[0]+48,y1:RED[1],x2:x-24,y2:y,stroke:col,'stroke-width':e.outcome==='landed'?3:1.4,'stroke-dasharray':(e.outcome==='busy'||e.outcome==='failed')?'3 5':'0',opacity:e.outcome==='busy'?.3:.85}));});
+    svg.appendChild(el('line',{x1:RED[0]+48,y1:RED[1],x2:x-32,y2:y,stroke:col,'stroke-width':e.outcome==='landed'?3.5:1.6,'stroke-dasharray':(e.outcome==='busy'||e.outcome==='failed')?'3 6':'0',opacity:e.outcome==='busy'?.3:.85}));});
   s.ev.filter(e=>e.side==='blue'&&D.actions[e.action]!=='no_op').forEach(e=>{ const [x,y]=pos[e.host];
-    svg.appendChild(el('line',{x1:BLUE[0]+(x-BLUE[0])*.3,y1:BLUE[1]-22,x2:x,y2:y+24,stroke:'var(--blue)','stroke-width':2.6,opacity:.8}));});
+    svg.appendChild(el('line',{x1:BLUE[0]+(x-BLUE[0])*.3,y1:BLUE[1]-28,x2:x,y2:y+34,stroke:'var(--blue)','stroke-width':3,opacity:.8}));});
   D.hosts.forEach(H=>{
     const [x,y]=pos[H.id], st=s.stage[H.id], g=el('g',{});
-    if(s.iso[H.id]) g.appendChild(el('circle',{cx:x,cy:y,r:32,fill:'none',stroke:'var(--blue)','stroke-width':2.4,'stroke-dasharray':'5 4'}));
-    g.appendChild(el('circle',{cx:x,cy:y,r:24,fill:SCOL[st],stroke:'var(--card)','stroke-width':2}));
-    g.appendChild(el('text',{x,y:y+4.5,'text-anchor':'middle',fill:'#fff','font-weight':700,'font-size':12},TY[H.type]));
-    g.appendChild(el('text',{x:x-40,y:y-22,'text-anchor':'middle',fill:'var(--faint)','font-size':10.5},'H'+H.id));
+    if(s.iso[H.id]) g.appendChild(el('circle',{cx:x,cy:y,r:41,fill:'none',stroke:'var(--blue)','stroke-width':3,'stroke-dasharray':'6 5'}));
+    g.appendChild(el('circle',{cx:x,cy:y,r:31,fill:SCOL[st],stroke:'var(--card)','stroke-width':2.5}));
+    g.appendChild(el('text',{x,y:y+5.5,'text-anchor':'middle',fill:'#fff','font-weight':700,'font-size':15},TY[H.type]));
+    g.appendChild(el('text',{x:x-56,y:y-34,'text-anchor':'middle',fill:'var(--faint)','font-size':12.5},'H'+H.id));
     const a=Math.min(1,(s.traffic[H.id]+s.user[H.id])/2);
-    g.appendChild(el('rect',{x:x+33,y:y-21,width:6,height:42,rx:2,fill:'var(--soft)'}));
-    g.appendChild(el('rect',{x:x+33,y:y+21-42*a,width:6,height:42*a,rx:2,fill:a>.45?'var(--s2)':'var(--faint)'}));
-    let bx=x-24; const by=y+42; const badge=(t,c)=>{g.appendChild(el('text',{x:bx,y:by,fill:c,'font-size':12,'font-weight':700},t));bx+=16;};
+    g.appendChild(el('rect',{x:x+42,y:y-28,width:8,height:56,rx:3,fill:'var(--soft)'}));
+    g.appendChild(el('rect',{x:x+42,y:y+28-56*a,width:8,height:56*a,rx:3,fill:a>.45?'var(--s2)':'var(--faint)'}));
+    let bx=x-30; const by=y+56; const badge=(t,c)=>{g.appendChild(el('text',{x:bx,y:by,fill:c,'font-size':16,'font-weight':700},t));bx+=22;};
     if(s.patched[H.id])badge('✓','var(--pos)'); if(s.honey[H.id])badge('◆','var(--blue)'); if(s.block[H.id])badge('⛔','var(--mute)'); if(s.redirect[H.id])badge('⇄','var(--mute)');
     svg.appendChild(g);
-    s.ev.filter(e=>e.side==='blue'&&e.host===H.id&&D.actions[e.action]!=='no_op').forEach(e=>svg.appendChild(el('text',{x,y:y-34,'text-anchor':'middle',fill:'var(--blue)','font-size':11,'font-weight':700},AB[e.action])));
-    s.ev.filter(e=>e.side==='red'&&e.host===H.id&&e.outcome==='landed').forEach(()=>svg.appendChild(el('text',{x,y:y-34,'text-anchor':'middle',fill:'var(--s3)','font-size':11,'font-weight':700},'foothold')));
+    s.ev.filter(e=>e.side==='blue'&&e.host===H.id&&D.actions[e.action]!=='no_op').forEach(e=>svg.appendChild(el('text',{x,y:y-46,'text-anchor':'middle',fill:'var(--blue)','font-size':14,'font-weight':700},AB[e.action])));
+    s.ev.filter(e=>e.side==='red'&&e.host===H.id&&e.outcome==='landed').forEach(()=>svg.appendChild(el('text',{x,y:y-46,'text-anchor':'middle',fill:'var(--s3)','font-size':14,'font-weight':700},'foothold')));
   });
   $('simmeta').textContent=`step ${i+1} of ${cur.steps.length} · breached now ${s.stage.filter(x=>x===3).length}`;
 }
@@ -437,35 +449,88 @@ function drawScore(){
 
 
 /* ---------- always-visible summaries ---------- */
-function renderNow(){
-  const s=cur.steps[i], pv=i?cur.steps[i-1]:null;
-  const reds=s.ev.filter(e=>e.side==='red'&&!['busy','failed'].includes(e.outcome));
-  const missed=s.ev.filter(e=>e.side==='red'&&['busy','failed'].includes(e.outcome)).length;
-  const blues=s.ev.filter(e=>e.side==='blue'&&D.actions[e.action]!=='no_op');
-  const li=(c,t,d)=>`<div class="item ${c}">${t}<small>${d}</small></div>`;
-  $('nowRed').innerHTML=(reds.length?reds.map(e=>{const [t,d]=redText(e);return li('r',t,d)}).join(''):'<div class="quiet">no successful attack</div>')+
-    (missed?`<div class="quiet">${missed} other attempt${missed>1?'s':''} failed or wasted</div>`:'');
-  $('nowBlue').innerHTML=blues.length?blues.map(e=>{const [t,d]=blueText(e,pv);return li('b',t,d)}).join(''):`<div class="quiet">${cur.blue==='none'?'no defense':'no action (no_op)'}</div>`;
-}
 function renderStatus(){
   const s=cur.steps[i], total=s.ev.filter(e=>e.side==='reward').reduce((a,e)=>a+e.amt,0);
   $('status').innerHTML=`<span>r <b class="${cls(total)}">${fmt(total)||0}</b></span><span>G <b>${fmt(CUM[i].run)||0}</b></span><span>breached <b>${s.stage.filter(x=>x===3).length}</b></span>`;
 }
 /* ---------- tabs ---------- */
-const TABS=['ledger','actions','timeline','compare','guide'];
+const TABS=['ledger','odds','actions','timeline','compare','guide'];
 function showTab(t){
   if(!TABS.includes(t)) t='ledger';
   TABS.forEach(x=>{ $('pane-'+x).hidden=(x!==t); document.querySelector(`[data-tab="${x}"]`).setAttribute('aria-selected',x===t?'true':'false'); });
   try{ localStorage.setItem('rvb-tab',t); }catch(e){}
 }
 
+
+/* ---------- attack odds ---------- */
+let OCUM=null;
+const f2=x=>(+x).toFixed(2), pc=x=>(100*x).toFixed(1)+'%', u3=x=>(+x).toFixed(3);
+function buildOdds(){
+  let a={att:0,rolls:0,hits:0,sumP:0,landed:0,trapped:0,failed:0,prolls:0,phits:0,psumP:0};
+  OCUM=cur.steps.map(st=>{ const od=st.od||{m:[0,0,0,0,0,0],l:[],g:[]};
+    a.att+=od.m[2]; od.l.forEach(r=>{a.rolls++; a.sumP+=Math.min(r[3],0.95); if(r[2]>0)a.hits++; if(r[2]===1)a.landed++; if(r[2]===2)a.trapped++; if(r[2]===0)a.failed++;});
+    od.g.forEach(r=>{a.prolls++; a.psumP+=r[2]; if(r[4])a.phits++;});
+    return {...a}; });
+}
+function renderOdds(){
+  const s=cur.steps[i], od=s.od||{m:[0,0,0,0,0,0],l:[],g:[]}, [theta,lam,n,k0,k1,k2]=od.m, K=[k0,k1,k2];
+  const busy=s.ev.filter(e=>e.side==='red'&&e.outcome==='busy').length;
+  let h=`<div class="grp"><div class="gh"><span><span class="dot" style="background:var(--red)"></span>Attack arrivals<span class="sub">${theta>0.5?'campaign':'calm'} period</span></span><span class="amt">${n} attempt${n===1?'':'s'}</span></div>
+   <div class="li"><span>Threat level θ<small>0.25 calm, 0.85 campaign (switches 5% / 10% per step)</small></span><span class="amt">${theta}</span></div>
+   <div class="li"><span>Expected attempts λ = 1.5 × (0.3 + 1.4 × θ)<small>the number of attempts is drawn from Poisson(λ)</small></span><span class="amt">${f2(lam)}</span></div>
+   <div class="li"><span>Attempts drawn this step<small>${n?`${busy} of them hit a host that is already compromised or isolated, so no roll was needed`:'quiet step: nothing to calculate'}</small></span><span class="amt">${n}</span></div></div>`;
+  od.l.forEach(r=>{
+    const [host,vec,out,P,u,v,pat,Z,mb,mr,tr,b]=r, z=D.hosts[host].zone, veff=v*(pat?0.5:1);
+    const res=out===0?['fails','neg']:out===1?['lands','pos']:['trapped by decoy','pos'];
+    const line=(lab,sub,val)=>`<div class="li"><span>${lab}${sub?`<small>${sub}</small>`:''}</span><span class="amt">${val}</span></div>`;
+    let rows=line(`Base chance for ${VEC[vec]}`,'fixed per attack type',f2(b))+
+      line('× Host vulnerability',`v = ${f2(v)}${pat?', patched halves it':''}`,`×${f2(veff)}`)+
+      line('× Zone pressure',z===0?'DMZ is the entry zone: no lateral pressure':`1 + 0.6 × min(2, k), k = ${K[z]} escalated host${K[z]===1?'':'s'} in ${D.zones[z-1]}`,`×${f2(Z)}`)+
+      (mb<1?line('× IP block','block_ip active on this host','×0.25'):'')+
+      (mr<1?line('× Traffic redirect',vec===2?'scrubbing is strong against DDoS':'scrubbing active on this host',`×${mr}`):'')+
+      line('= Landing chance P',P>=0.95?'capped at 0.95':'',`<b>${pc(Math.min(P,0.95))}</b>`)+
+      line(`Roll u = ${u3(u)}`,out>0?'u is below P, so the attack gets through':'u is not below P, so the attack fails',`<span class="${res[1]}">${out>0?'u < P':'u ≥ P'}</span>`);
+    if(tr>=0) rows+=line(`Decoy check u = ${u3(tr)}`,tr<0.8?'u below 0.80: honeypot catches the attacker (+50 reward)':'u not below 0.80: the decoy missed it, attack lands',`<span class="${tr<0.8?'pos':'neg'}">${tr<0.8?'trapped':'missed'}</span>`);
+    h+=`<div class="grp"><div class="gh"><span><span class="dot" style="background:var(--red)"></span>${VEC[vec]} → ${hostName(host)}</span><span class="amt ${res[1]}">${res[0]}</span></div>${rows}</div>`;
+  });
+  od.g.forEach(r=>{
+    const [host,before,P,u,ok,base,v,pat,mvec,mtype,mhp,vec]=r, vf=(0.4+0.6*v)*(pat?0.6:1);
+    const line=(lab,sub,val)=>`<div class="li"><span>${lab}${sub?`<small>${sub}</small>`:''}</span><span class="amt">${val}</span></div>`;
+    let rows=line(before===1?'Base chance, early → escalated':'Base chance, escalated → breached','fixed per stage',f2(base))+
+      line('× Weakness factor 0.4 + 0.6 × v',`v = ${f2(v)}${pat?', patched ×0.6':''}`,`×${f2(vf)}`)+
+      (mvec!==1?line('× Attack type',`${VEC[vec]} ${before===1?'escalates':'steals'} ${mvec>1?'faster':'slower'}`,`×${mvec}`):'')+
+      (mtype!==1?line('× Host type','databases and cloud hosts breach faster','×1.5'):'')+
+      (mhp!==1?line('× Decoy slowing','honeypot on this host','×0.8'):'')+
+      line('= Advance chance P','',`<b>${pc(P)}</b>`)+
+      line(`Roll u = ${u3(u)}`,ok?'u is below P: the intruder advances':'u is not below P: the intruder stays put',`<span class="${ok?'neg':'pos'}">${ok?'u < P':'u ≥ P'}</span>`);
+    h+=`<div class="grp"><div class="gh"><span><span class="dot" style="background:var(--s2)"></span>${hostName(host)}: ${before===1?'early → escalated':'escalated → breached'}</span><span class="amt ${ok?'neg':'pos'}">${ok?'advances':'stays'}</span></div>${rows}</div>`;
+  });
+  const frozen=D.hosts.filter(H=>s.iso[H.id]&&s.stage[H.id]>=1&&s.stage[H.id]<3);
+  frozen.forEach(H=>{ h+=`<div class="grp"><div class="gh"><span><span class="dot" style="background:var(--blue)"></span>${hostName(H.id)} is isolated</span><span class="amt zero">frozen</span></div><div class="li"><span>No escalation roll<small>isolation freezes progression and blocks new attacks for 5 steps</small></span><span class="amt">P = 0</span></div></div>`; });
+  if(!od.l.length&&!od.g.length&&!frozen.length) h+='<div class="quiet">No probability rolls this step.</div>';
+  $('oddsCalc').innerHTML=h;
+  $('oddsmeta').textContent=`step ${i+1}`;
+  // summary
+  const L=od.l, landed=L.filter(r=>r[2]===1).length, trap=L.filter(r=>r[2]===2).length, fail=L.filter(r=>r[2]===0).length, adv=od.g.filter(r=>r[4]).length;
+  const c=OCUM[i];
+  const row=(a,b)=>`<div><span>${a}</span><span class="amt">${b}</span></div>`;
+  $('oddsSum').innerHTML=`<div class="chips" style="margin-bottom:10px">
+     ${row('Attempts drawn',n)}${row('Landed',landed)}${row('Failed',fail)}${row('Trapped by decoy',trap)}${row('Wasted (host already taken)',busy)}${row('Escalation rolls / advanced',`${od.g.length} / ${adv}`)}</div>
+   <h4 style="margin-top:6px">Running totals, steps 1–${i+1}</h4>
+   <div class="chips">
+     ${row('Landing rolls',c.rolls)}${row('Average landing chance P',c.rolls?pc(c.sumP/c.rolls):'–')}
+     ${row('Actual hit rate (landed + trapped)',c.rolls?pc(c.hits/c.rolls):'–')}
+     ${row('Escalation rolls',c.prolls)}${row('Average advance chance P',c.prolls?pc(c.psumP/c.prolls):'–')}
+     ${row('Actual advance rate',c.prolls?pc(c.phits/c.prolls):'–')}</div>`;
+}
+
 /* ---------- controls ---------- */
-function render(){ renderMap(); renderFeed(); renderLedger(); renderNow(); renderStatus(); drawMarker(); }
+function render(){ renderMap(); renderFeed(); renderLedger(); renderOdds(); renderStatus(); drawMarker(); }
 function go(n){ i=Math.max(0,Math.min(cur.steps.length-1,n)); $('scrub').value=i; $('stepno').textContent=`${i+1} / ${cur.steps.length}`; render(); }
 function stop(){ if(timer){clearInterval(timer);timer=null;} $('play').textContent='▶ Play'; }
 function start(){ if(i>=cur.steps.length-1)i=0; $('play').textContent='❚❚ Pause'; timer=setInterval(()=>{ if(i>=cur.steps.length-1){stop();return;} go(i+1); },+$('speed').value); }
 function toggle(){ timer?stop():start(); }
-function pick(){ cur=D.scenarios.find(s=>s.blue===$('blue').value&&s.seed===+$('seed').value); $('scrub').max=cur.steps.length-1; stop(); i=0; buildLedger(); drawChart(); drawScore(); go(0); }
+function pick(){ cur=D.scenarios.find(s=>s.blue===$('blue').value&&s.seed===+$('seed').value); $('scrub').max=cur.steps.length-1; stop(); i=0; buildLedger(); buildOdds(); drawChart(); drawScore(); go(0); }
 function setup(){
   $('blue').innerHTML=Object.entries(D.blues).map(([k,v])=>`<option value="${k}">${v}</option>`).join(''); $('blue').value='mappo';
   const seeds=[...new Set(D.scenarios.map(s=>s.seed))]; $('seed').innerHTML=seeds.map((s,k)=>`<option value="${s}">Episode ${k+1}</option>`).join('');
@@ -473,7 +538,7 @@ function setup(){
   $('play').onclick=toggle; $('prev').onclick=()=>go(i-1); $('next').onclick=()=>go(i+1); $('scrub').oninput=e=>go(+e.target.value);
   $('speed').onchange=()=>{ if(timer){stop();start();} };
   document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)&&e.target.type!=='range')return;
-    if(/^[1-5]$/.test(e.key)){showTab(TABS[+e.key-1]);} else if(e.key===' '){e.preventDefault();toggle();} else if(e.key==='ArrowRight'){go(i+1);} else if(e.key==='ArrowLeft'){go(i-1);} });
+    if(/^[1-6]$/.test(e.key)){showTab(TABS[+e.key-1]);} else if(e.key===' '){e.preventDefault();toggle();} else if(e.key==='ArrowRight'){go(i+1);} else if(e.key==='ArrowLeft'){go(i-1);} });
   document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
   let t0='ledger'; try{ t0=localStorage.getItem('rvb-tab')||'ledger'; }catch(e){}
   showTab(t0);

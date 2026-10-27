@@ -255,13 +255,18 @@ class NetworkSim:
         # ---- cross-zone pressure (from state at start of attack phase = "next step" effect)
         active_bad = (self.stage >= ESCALATED) & (self.isolated_t == 0)
         zmult = np.ones(self.n)
+        zk = [0] * self.nz
         for z in range(1, self.nz):
             k = int(active_bad[self.zone_hosts[z - 1]].sum())
+            zk[z] = min(2, k)
             zmult[self.zone_hosts[z]] = 1.0 + 0.6 * min(2, k)
 
         # ---- attack landing
         any_honey = bool((self.honey_t > 0).any())
         n_att = r.poisson(cfg.attack_rate * (0.3 + 1.4 * self.threat_true))
+        if self.tracing:
+            self._ev.append(dict(side="odds", kind="meta", theta=float(self.threat_true),
+                                 lam=float(cfg.attack_rate * (0.3 + 1.4 * self.threat_true)), n=int(n_att), k=list(zk)))
         for _ in range(n_att):
             if cfg.attack_profile == "adaptive":
                 h, vec, why = self._red_choose()
@@ -280,6 +285,10 @@ class NetworkSim:
                                          isolated=bool(self.isolated_t[h] > 0)))
                 continue
             p = LAND_P[vec] * self._veff(h) * zmult[h]
+            if self.tracing:
+                _comp = (float(LAND_P[vec]), float(self.vuln[h]), bool(self.patched[h]), float(zmult[h]),
+                         0.25 if self.block_t[h] > 0 else 1.0,
+                         (0.1 if vec == DDOS else 0.6) if self.redirect_t[h] > 0 else 1.0)
             if cfg.attack_profile == "boundary" and h in self.gateways[1:]:
                 p *= 1.3
             mods = []
@@ -289,13 +298,19 @@ class NetworkSim:
                 p *= 0.1 if vec == DDOS else 0.6; mods.append("redirected")
             if self.patched[h]:
                 mods.append("patched")
-            if r.random() < min(p, 0.95):
-                if self.honey_t[h] > 0 and r.random() < 0.8:      # decoy traps the attacker
+            ur = r.random()
+            if ur < min(p, 0.95):
+                tr = None
+                if self.honey_t[h] > 0:
+                    tr = r.random()
+                if tr is not None and tr < 0.8:                    # decoy traps the attacker
                     rz[self.zone_of[h]] += R_DETECT
                     self._rw('trap', h, R_DETECT)
                     self.stats["trapped"] += 1
                     if self.tracing:
                         self._ev.append(dict(side="red", host=h, vec=int(vec), outcome="trapped", why=why, mods=mods, p=float(p)))
+                        self._ev.append(dict(side="odds", kind="land", host=h, vec=int(vec), comp=_comp, p=float(p), u=float(ur),
+                                             out="trapped", tr=float(tr)))
                     continue
                 self.stage[h] = EARLY
                 self.atype[h] = vec
@@ -304,8 +319,12 @@ class NetworkSim:
                 self.cur_event[h] = ev
                 if self.tracing:
                     self._ev.append(dict(side="red", host=h, vec=int(vec), outcome="landed", why=why, mods=mods, p=float(p)))
+                    self._ev.append(dict(side="odds", kind="land", host=h, vec=int(vec), comp=_comp, p=float(p), u=float(ur),
+                                         out="landed", tr=(None if tr is None else float(tr))))
             elif self.tracing:
                 self._ev.append(dict(side="red", host=h, vec=int(vec), outcome="failed", why=why, mods=mods, p=float(p)))
+                self._ev.append(dict(side="odds", kind="land", host=h, vec=int(vec), comp=_comp, p=float(p), u=float(ur),
+                                     out="failed", tr=None))
 
         # ---- progression (privilege escalation, data theft)
         for h in np.where((self.stage >= EARLY) & (self.stage < BREACHED) & (self.isolated_t == 0))[0]:
@@ -320,7 +339,15 @@ class NetworkSim:
                     p *= 1.5
             if self.honey_t[h] > 0:
                 p *= 0.8
-            if r.random() < p:
+            ur = r.random()
+            if self.tracing:
+                self._ev.append(dict(
+                    side="odds", kind="prog", host=int(h), before=int(s), p=float(p), u=float(ur), ok=bool(ur < p), vec=int(vec),
+                    base=float(cfg.prog_early if s == EARLY else cfg.prog_esc), v=float(self.vuln[h]), pat=bool(self.patched[h]),
+                    mvec=float((1.2 if vec == PHISHING else 0.6 if vec == DDOS else 1.0) if s == EARLY else (1.4 if vec == DDOS else 1.0)),
+                    mtype=float(1.5 if (s != EARLY and self.types[h] in (DATABASE, CLOUD)) else 1.0),
+                    mhp=float(0.8 if self.honey_t[h] > 0 else 1.0)))
+            if ur < p:
                 self.stage[h] += 1
                 if self.tracing:
                     self._ev.append(dict(side="red", host=int(h), outcome="progressed", vec=int(vec), before=int(s),
