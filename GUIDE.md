@@ -42,8 +42,8 @@ sanity_check.py           <- 1-minute check that the simulator behaves sensibly
 run_all.sh                <- the commands that regenerate everything (hours of compute)
 ```
 
-## 4. How to open and use the interactive demo (`showcase/demo.html`)
-1. Double-click `showcase/demo.html` (or right-click → Open with → Chrome/Edge). Use a wide window.
+## 4. How to open and use the interactive demo (`index.html`)
+1. Double-click `index.html` (or right-click → Open with → Chrome/Edge). Use a wide window.
    Do **not** open `template.html`: it is the empty template and shows blank dropdowns.
 2. Top bar:
    - **Blue (defender):** No defense / Rule-based heuristic / PPO / MAPPO.

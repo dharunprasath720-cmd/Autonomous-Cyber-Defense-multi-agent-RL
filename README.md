@@ -8,12 +8,12 @@ generalization tests, two ablations, and an **offline** replay of real CICIDS201
 Full write-up: [`report/report.md`](report/report.md).
 
 ## Interactive showcase (Red vs Blue)
-Open `showcase/demo.html` by double-clicking it (self-contained, works offline). Pick the defender (none / heuristic / PPO /
+Open `index.html` by double-clicking it (self-contained, works offline). Pick the defender (none / heuristic / PPO /
 MAPPO) and an episode, then press Play. Each step shows the real attack attempts, the defender's actions, why they
 succeeded or failed, and a side-by-side reward ledger (calculation of this step's reward, and the running-score update). Rebuild with:
 ```bash
 python -m evaluation.showcase_traces   # records traces from the trained policies -> showcase/traces.json
-python showcase/build_demo.py          # -> showcase/demo.html   (template.html is only the unfilled template!)
+python showcase/build_demo.py          # -> index.html  (showcase/template.html is only the unfilled template)
 ```
 
 ## Layout
