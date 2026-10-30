@@ -43,27 +43,28 @@ run_all.sh                <- the commands that regenerate everything (hours of c
 ```
 
 ## 4. How to open and use the interactive demo (`index.html`)
-1. Double-click `index.html` (or right-click → Open with → Chrome/Edge). Use a wide window.
-   Do **not** open `template.html`: it is the empty template and shows blank dropdowns.
-2. Top bar:
-   - **Blue (defender):** No defense / Rule-based heuristic / PPO / MAPPO.
-   - **Episode seed:** two different pre-recorded games.
-   - **▶ Play / ◀ ▶ / slider / Speed:** replay controls (Normal = 1.8 s per step; Slow = 3 s).
-3. **Left, the network:** three zone boxes (DMZ, Internal, Data tier). Each circle is a host; its **colour is the true
-   state** (green clean → yellow early intrusion → orange escalated → red breached). Dashed blue ring = isolated; ✓ =
-   patched; ◆ = honeypot decoy; ⛔ = IP blocked; ⇄ = traffic redirected. The thin bar beside a host is the **anomaly score
-   Blue actually sees** (it does not see the colour!). Lines: from RED (to a host) = an attack attempt (thick red =
-   landed, dashed = failed/wasted, blue = trapped by a decoy); from BLUE = a defensive action.
-4. **Right, two cards:** RED's attempts and BLUE's actions this step, each with a written explanation (what happened, the
-   odds, what the defender could and could not see, and the reward effect).
-   **Reward ledger (two cards side by side, under the map):** left = every reward rule that fired this step with its host,
-   calculation and amount, summing to the step reward r_t (plus a by-zone split); right = the update G_after = G_before + r_t,
-   and the running total per rule (detections, preventions, action costs, downtime, breach penalties).
-5. **Bottom left:** reward timeline + clickable event log (click a line to jump there). **Bottom right:** all four
-   defenders on the same episode side by side, plus the 50-episode numbers against the adaptive attacker.
-6. **Good things to try:** (a) "No defense" with either attacker, to see how quickly everything is breached; (b) watch the ledger
-   as MAPPO or PPO restores a host (+100 +50 −50 −1) and as 'No defense' accumulates −500 per breached host; (c) the heuristic vs PPO,
-   noting how the heuristic isolates then restores while PPO often restores straight away.
+Online: https://dharunprasath720-cmd.github.io/Autonomous-Cyber-Defense-multi-agent-RL/ . Offline: double-click `index.html`
+(use a wide window; it fits one screen on a laptop, nothing to scroll).
+1. **Top bar:** pick the **Defender** (No defense / Rule-based heuristic / PPO / MAPPO) and an **Episode**; **Speed**
+   (Normal = 2.6 s per step); ▶ Play, ◀ ▶ to step, and a slider. Keys: space = play, ← → = step, 1-7 = switch tab.
+2. **Left half, the simulation (fixed size):** three zones (DMZ, Internal, Data tier) with hosts H0-H7. Colour = the
+   host's true state (green clean, yellow early intrusion, orange escalated, red breached). Dashed ring = isolated, ✓ =
+   patched, ◆ = decoy, the thin bar = the anomaly score the defender actually sees. Lines from RED = attack attempts;
+   lines from BLUE = defensive actions.
+3. **Right half, seven tabs** (a small strip shows this step's reward r, the running score G and breached hosts):
+   - **1 Rewards:** every reward rule that fired this step, grouped under the action that earned it, with the running score
+     update (before + this step = after) and a per-rule breakdown.
+   - **2 Attack odds:** the probability calculation for each attack attempt and escalation roll: base chance x
+     vulnerability x zone pressure x defences = P, then the random draw u (0 to 1) compared with P.
+   - **3 Actions:** the red and blue events of the latest three steps.
+   - **4 Timeline:** cumulative reward over the episode; click an event to jump to it.
+   - **5 Learning:** how each method improved during training, from the real training logs: return over time, stability
+     (raw vs normalized rewards) and exploration (policy entropy), with headline metrics and a training-step cursor.
+   - **6 Compare:** the same episode under every defender.
+   - **7 Guide:** how the attacks and defences work.
+4. **Good things to try:** watch "No defense" accumulate -500 per breached host; watch MAPPO restore a host (+50 +100 -1
+   -50 = +99); open Attack odds and check a roll by hand; open Learning and move the cursor to see when each method
+   overtakes the heuristic.
 
 ## 5. How to run things yourself (Windows, PowerShell, from the project folder)
 ```bash

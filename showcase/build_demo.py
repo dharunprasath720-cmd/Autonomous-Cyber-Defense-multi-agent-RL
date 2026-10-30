@@ -46,7 +46,11 @@ for sc in D["scenarios"]:                      # slim the payload: drop unused f
             st[k] = st[k] if any(st[k]) else 0
 traces = json.dumps(D, separators=(",", ":"))
 html = open("showcase/template.html", encoding="utf-8").read()
+import sys
+sys.path.insert(0, "showcase")
+from build_learning import learning_data
 html = html.replace("/*DATA*/", traces.replace("</", r"<\/"))
+html = html.replace("/*LEARN*/", json.dumps(learning_data(), separators=(",", ":"), allow_nan=False))
 import os
 os.makedirs("showcase/site", exist_ok=True)
 open("showcase/site/index.html", "w", encoding="utf-8").write(html)

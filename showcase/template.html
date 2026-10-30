@@ -13,14 +13,15 @@
   --bg:#f5f5f6; --card:#ffffff; --ink:#15181d; --mute:#6a717d; --faint:#9aa1ac; --line:#e6e8eb; --soft:#f1f2f4;
   --red:#c4405a; --blue:#2f6db3; --pos:#2c8559; --neg:#c0392b;
   --s0:#86b99a; --s1:#e2b341; --s2:#e07a35; --s3:#c8423b;
+  --c-ppo:#2c8559; --c-ippo:#b9820a; --c-mappo:#6f4fb0;
   --sans:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){--bg:#0f1114; --card:#16191e; --ink:#e9ebee; --mute:#8d95a2; --faint:#626a77; --line:#262b33; --soft:#1c2026;
-    --red:#e0607a; --blue:#5b9be0; --pos:#4fbf86; --neg:#ec6b5e; --s0:#5f9c7a; color-scheme:dark}
+    --red:#e0607a; --blue:#5b9be0; --pos:#4fbf86; --neg:#ec6b5e; --s0:#5f9c7a; --c-ppo:#4fbf86; --c-ippo:#e0a83a; --c-mappo:#a38cf0; color-scheme:dark}
 }
 :root[data-theme="dark"]{--bg:#0f1114; --card:#16191e; --ink:#e9ebee; --mute:#8d95a2; --faint:#626a77; --line:#262b33; --soft:#1c2026;
-  --red:#e0607a; --blue:#5b9be0; --pos:#4fbf86; --neg:#ec6b5e; --s0:#5f9c7a; color-scheme:dark}
+  --red:#e0607a; --blue:#5b9be0; --pos:#4fbf86; --neg:#ec6b5e; --s0:#5f9c7a; --c-ppo:#4fbf86; --c-ippo:#e0a83a; --c-mappo:#a38cf0; color-scheme:dark}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans);letter-spacing:.005em}
@@ -56,10 +57,10 @@ svg{display:block;width:100%;height:auto}
 /* tabs */
 .tabhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 12px;border-bottom:1px solid var(--line);padding:0 10px 0 6px}
 .tabs{display:flex;gap:0;flex-wrap:wrap}
-.tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:10px 11px 9px;color:var(--mute);font-weight:500;font-size:13px}
+.tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:10px 8px 9px;color:var(--mute);font-weight:500;font-size:12.5px;white-space:nowrap}
 .tab:hover{background:none;color:var(--ink)}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
-.tab kbd{font-family:var(--mono);font-size:10px;color:var(--faint);margin-right:5px;border:1px solid var(--line);border-radius:3px;padding:0 3px}
+.tab kbd{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-right:4px;border:1px solid var(--line);border-radius:3px;padding:0 3px}
 .status{font-family:var(--mono);font-size:12px;color:var(--mute);display:flex;gap:12px;white-space:nowrap}
 .status b{color:var(--ink);font-weight:600}
 .pane{flex:1 1 auto;min-height:0;overflow:auto;padding:12px 14px;scrollbar-width:thin}
@@ -115,6 +116,19 @@ tr.cur td{background:var(--soft);font-weight:600}
 details summary{cursor:pointer;font-weight:600;font-size:13px}
 .scroll{overflow-x:auto}
 .foot{color:var(--faint);font-size:12px;margin:10px 0 0}
+/* learning tab */
+.seg{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.seg button{padding:3px 10px;font-size:12px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg .gap{flex:1}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin-top:6px}
+.tile{border:1px solid var(--line);border-radius:8px;padding:5px 8px;min-width:0}
+.tile .tk{font-size:10px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+.tile .tv{font-family:var(--mono);font-size:14px;font-weight:600;white-space:nowrap}
+.tile .ts{font-size:10px;color:var(--faint);line-height:1.2}
+.lcur{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--mute);margin:2px 0 4px}
+.lcur input{flex:1}
+.sw{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
 /* desktop: everything fits one screen, nothing to scroll */
 @media (min-width:1021px){
   html,body{height:100%;overflow:hidden}
@@ -141,7 +155,7 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
     <label>Episode<select id="seed"></select></label>
     <label>Speed<select id="speed"><option value="4500">Slow</option><option value="2600" selected>Normal</option><option value="1400">Fast</option></select></label>
     <div style="display:flex;gap:6px;align-items:flex-end"><button id="prev" aria-label="Previous step">◀</button><button id="play" class="go">▶ Play</button><button id="next" aria-label="Next step">▶</button></div>
-    <label class="scrub"><span class="row"><span>Step <span id="stepno"></span></span><span>space play · ← → step · 1–6 tabs</span></span><input type="range" id="scrub" min="0" value="0" aria-label="Step"></label>
+    <label class="scrub"><span class="row"><span>Step <span id="stepno"></span></span><span>space play · ← → step · 1–7 tabs</span></span><input type="range" id="scrub" min="0" value="0" aria-label="Step"></label>
   </div>
 
   <div class="main">
@@ -158,12 +172,13 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
     <section class="half card">
       <div class="tabhead">
         <div class="tabs" role="tablist" aria-label="Panels">
-          <button class="tab" role="tab" data-tab="ledger"><kbd>1</kbd>Reward ledger</button>
+          <button class="tab" role="tab" data-tab="ledger"><kbd>1</kbd>Rewards</button>
           <button class="tab" role="tab" data-tab="odds"><kbd>2</kbd>Attack odds</button>
-          <button class="tab" role="tab" data-tab="actions"><kbd>3</kbd>Live actions</button>
+          <button class="tab" role="tab" data-tab="actions"><kbd>3</kbd>Actions</button>
           <button class="tab" role="tab" data-tab="timeline"><kbd>4</kbd>Timeline</button>
-          <button class="tab" role="tab" data-tab="compare"><kbd>5</kbd>Compare</button>
-          <button class="tab" role="tab" data-tab="guide"><kbd>6</kbd>Guide</button>
+          <button class="tab" role="tab" data-tab="learn"><kbd>5</kbd>Learning</button>
+          <button class="tab" role="tab" data-tab="compare"><kbd>6</kbd>Compare</button>
+          <button class="tab" role="tab" data-tab="guide"><kbd>7</kbd>Guide</button>
         </div>
         <div class="status" id="status"></div>
       </div>
@@ -217,6 +232,24 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
         <div class="log" id="log"></div>
       </div>
 
+      <div class="pane" id="pane-learn" role="tabpanel" hidden>
+        <div class="cap"><span>How the defenders improved during training</span><span class="r">real training logs · 100 steps = 1 episode</span></div>
+        <div class="seg" id="lmethod" role="group" aria-label="Method">
+          <button data-m="ppo" aria-pressed="false">PPO</button><button data-m="ippo" aria-pressed="false">Independent PPO</button><button data-m="mappo" aria-pressed="false">MAPPO</button>
+        </div>
+        <div class="tiles" id="ltiles"></div>
+        <div class="seg" id="lview" role="group" aria-label="Chart">
+          <button data-v="return" aria-pressed="true">Return</button><button data-v="stability" aria-pressed="false">Stability</button><button data-v="explore" aria-pressed="false">Exploration</button>
+          <span class="gap"></span>
+          <span id="lzoomwrap" class="seg" style="margin:0"><button data-z="1" aria-pressed="true">Zoom</button><button data-z="0" aria-pressed="false">Full range</button></span>
+        </div>
+        <svg id="lchart" viewBox="0 0 700 320" role="img" aria-label="Training progress chart"></svg>
+        <div class="legend" id="llegend"></div>
+        <div class="lcur" id="lcurwrap"><span>Training step <b id="lcurlab"></b></span><input type="range" id="lcur" min="0" max="1000" step="2000" value="100000" aria-label="Training step"></div>
+        <div class="scroll"><table id="lread"></table></div>
+        <details><summary>How to read this</summary><p class="note" id="lnote"></p></details>
+      </div>
+
       <div class="pane" id="pane-compare" role="tabpanel" hidden>
         <div class="cap"><span>Same episode, every defender</span></div>
         <div class="scroll"><table id="score"></table></div>
@@ -248,6 +281,7 @@ details summary{cursor:pointer;font-weight:600;font-size:13px}
 </div>
 
 <script id="data" type="application/json">/*DATA*/</script>
+<script id="learn" type="application/json">/*LEARN*/</script>
 <script>
 const D = JSON.parse(document.getElementById('data').textContent);
 D.scenarios.forEach(sc=>sc.steps.forEach(st=>{
@@ -454,11 +488,12 @@ function renderStatus(){
   $('status').innerHTML=`<span>r <b class="${cls(total)}">${fmt(total)||0}</b></span><span>G <b>${fmt(CUM[i].run)||0}</b></span><span>breached <b>${s.stage.filter(x=>x===3).length}</b></span>`;
 }
 /* ---------- tabs ---------- */
-const TABS=['ledger','odds','actions','timeline','compare','guide'];
+const TABS=['ledger','odds','actions','timeline','learn','compare','guide'];
 function showTab(t){
   if(!TABS.includes(t)) t='ledger';
   TABS.forEach(x=>{ $('pane-'+x).hidden=(x!==t); document.querySelector(`[data-tab="${x}"]`).setAttribute('aria-selected',x===t?'true':'false'); });
   try{ localStorage.setItem('rvb-tab',t); }catch(e){}
+  if(t==='learn') renderLearn();
 }
 
 
@@ -524,6 +559,110 @@ function renderOdds(){
      ${row('Actual advance rate',c.prolls?pc(c.phits/c.prolls):'–')}</div>`;
 }
 
+
+/* ---------- learning progress (real training logs) ---------- */
+const L=JSON.parse(document.getElementById('learn').textContent);
+const MC={ppo:'var(--c-ppo)',ippo:'var(--c-ippo)',mappo:'var(--c-mappo)'};
+let lm=null, lv='return', lz=true, lcurV=100000;
+const ks=v=>v==null?'not reached':(v>=1000?Math.round(v/1000)+'k':v)+' steps';
+const eps=v=>v==null?'':`≈ ${Math.round(v/100).toLocaleString()} episodes`;
+const tickFmt=v=>v===0?'0':Math.abs(v)>=1000?(v/1000)+'k':(Math.abs(v)<1&&v!==0?String(v):String(v));
+const expFmt=v=>v>=1?(v===1?'1':'1e'+Math.round(Math.log10(v))):'1e'+Math.round(Math.log10(v));
+function lineChart(svg,b,series,o){
+  const xmax=o.xmax, ysc=o.ysc||'lin', c=o.c||1000, fs=o.fs||10.5;
+  const T=y=>ysc==='symlog'?Math.sign(y)*Math.log10(1+Math.abs(y)/c):ysc==='log'?Math.log10(Math.max(y,1e-12)):y;
+  const t0=T(o.ymin), t1=T(o.ymax);
+  const px=x=>b.x+b.w*x/xmax, py=y=>b.y+b.h*(1-(Math.min(Math.max(T(y),t0),t1)-t0)/(t1-t0));
+  (o.yticks||[]).forEach(v=>{ const y=py(v);
+    svg.appendChild(el('line',{x1:b.x,x2:b.x+b.w,y1:y,y2:y,stroke:v===0&&ysc!=='log'?'var(--faint)':'var(--line)','stroke-width':v===0&&ysc!=='log'?1.3:1}));
+    svg.appendChild(el('text',{x:b.x-6,y:y+3.5,'text-anchor':'end','font-size':fs,fill:'var(--mute)'},(o.yfmt||tickFmt)(v))); });
+  for(let x=0;x<=xmax;x+=(o.xstep||100000)){
+    svg.appendChild(el('line',{x1:px(x),x2:px(x),y1:b.y+b.h,y2:b.y+b.h+4,stroke:'var(--faint)'}));
+    svg.appendChild(el('text',{x:px(x),y:b.y+b.h+15,'text-anchor':'middle','font-size':fs,fill:'var(--mute)'},x===0?'0':(x/1000)+'k')); }
+  svg.appendChild(el('rect',{x:b.x,y:b.y,width:b.w,height:b.h,fill:'none',stroke:'var(--line)'}));
+  (o.refs||[]).forEach(r=>{ const y=py(r.y);
+    svg.appendChild(el('line',{x1:b.x,x2:b.x+b.w,y1:y,y2:y,stroke:r.color||'var(--mute)','stroke-width':1.4,'stroke-dasharray':'5 4'}));
+    if(r.label) svg.appendChild(el('text',{x:b.x+b.w-4,y:y+(r.dy||-5),'text-anchor':'end','font-size':fs-0.5,fill:r.color||'var(--mute)'},r.label)); });
+  series.forEach(s=>{ const pts=s.x.map((x,k)=>`${px(x).toFixed(1)} ${py(s.y[k]).toFixed(1)}`);
+    svg.appendChild(el('path',{d:'M'+pts.join('L'),fill:'none',stroke:s.color,'stroke-width':s.w||2,opacity:s.op==null?1:s.op,'stroke-linejoin':'round','stroke-linecap':'round'})); });
+  return {px,py};
+}
+function interp(xs,ys,x){ if(x<=xs[0])return ys[0]; if(x>=xs[xs.length-1])return null; let k=1; while(xs[k]<x)k++; const f=(x-xs[k-1])/(xs[k]-xs[k-1]); return ys[k-1]+f*(ys[k]-ys[k-1]); }
+const fm=v=>(v>0?'+':v<0?'−':'')+Math.abs(Math.round(v)).toLocaleString();
+
+function renderLearn(){
+  if(!lm) lm=(typeof cur!=='undefined'&&cur&&MC[cur.blue])?cur.blue:'mappo';
+  document.querySelectorAll('#lmethod button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===lm));
+  document.querySelectorAll('#lview button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===lv));
+  document.querySelectorAll('#lzoomwrap button').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.z==='1')===lz));
+  $('lzoomwrap').hidden=lv!=='return';
+  const M=L.metrics[lm], tile=(k,v,sub,cl)=>`<div class="tile"><div class="tk">${k}</div><div class="tv ${cl||''}">${v}</div><div class="ts">${sub||''}</div></div>`;
+  $('ltiles').innerHTML=
+    tile('Start',fm(M.start),'before learning')+
+    tile('Final',fm(M.final),`± ${M.final_sd}, ${M.runs} seeds`,'pos')+
+    tile('90% of gain',ks(M.t90),eps(M.t90))+
+    tile('Beats heuristic',ks(M.beat),`level ${fm(M.beat_ref)}`)+
+    tile('Stopped at',ks(M.plateau),'plateau')+
+    tile('Unseen test',fm(M.heldout_reward),`breach rate ${Math.round(M.heldout_breach*100)}%`,'pos');
+  const svg=$('lchart'); svg.innerHTML='';
+  const showCur=lv!=='stability'; $('lcurwrap').hidden=!showCur; $('lread').hidden=!showCur;
+  if(lv==='return'){
+    const keys=['ppo','ippo','mappo'], series=[];
+    keys.forEach(k=>{ const m=L.methods[k], sel=k===lm;
+      m.seeds.forEach(s=>series.push({x:s.x,y:s.y,color:MC[k],w:1,op:sel?.28:.12}));
+      series.push({x:m.mean.x,y:m.mean.y,color:MC[k],w:sel?3.2:1.8,op:sel?1:.55}); });
+    const o=lz?{ymin:-3000,ymax:3500,ysc:'lin',yticks:[-2000,-1000,0,1000,2000,3000]}:{ymin:-130000,ymax:4000,ysc:'symlog',c:1000,yticks:[-100000,-10000,-1000,0,1000]};
+    const g=lineChart(svg,{x:56,y:10,w:634,h:272},series,{...o,xmax:L.xmax,xstep:100000,refs:[
+      {y:L.ref.heur1,color:'var(--mute)',label:`heuristic, 1 action/step (${fm(L.ref.heur1)})`,dy:14},
+      {y:L.ref.heur3,color:'var(--faint)',label:`heuristic, 3 actions/step (${fm(L.ref.heur3)})`,dy:-5}]});
+    svg.appendChild(el('text',{x:14,y:146,'font-size':10.5,fill:'var(--mute)',transform:'rotate(-90 14 146)','text-anchor':'middle'},lz?'episode return (zoomed)':'episode return (log-like scale)'));
+    svg.appendChild(el('text',{x:373,y:316,'font-size':10.5,fill:'var(--mute)','text-anchor':'middle'},'training steps'));
+    svg.appendChild(el('line',{id:'lcl',x1:g.px(lcurV),x2:g.px(lcurV),y1:10,y2:282,stroke:'var(--ink)','stroke-width':1.2,opacity:.7}));
+    L._g=g;
+    $('llegend').innerHTML=keys.map(k=>`<span><i class="sw" style="background:${MC[k]}"></i>${L.methods[k].label}${k===lm?' (selected)':''}</span>`).join('')+'<span>faint lines = individual seeds</span>';
+    $('lnote').textContent='Each line is the average of three independent training runs. Return is the score of a full 100-step episode, measured while the agent was learning (so it includes exploration). Single-action methods (PPO) start far lower than the three-action methods because one defender cannot cover three zones. The dashed lines are the hand-written heuristic for reference.';
+  } else if(lv==='stability'){
+    const A=L.ablation, ser=(key)=>[{x:A.raw.x,y:A[key==='rew'?'raw':'raw'][key],color:'var(--neg)',w:2.2},{x:A.norm.x,y:A.norm[key],color:'var(--pos)',w:2.2}];
+    const boxes=[{x:48,y:22,w:290,h:108,t:'Return (log-like scale)',k:'rew',o:{ymin:-130000,ymax:4000,ysc:'symlog',c:1000,yticks:[-100000,-1000,0,1000]}},
+                 {x:392,y:22,w:290,h:108,t:'Clip fraction (how much the policy changes)',k:'clip',o:{ymin:0,ymax:0.16,yticks:[0,0.05,0.1,0.15]}},
+                 {x:48,y:188,w:290,h:108,t:'Approx. KL (size of each policy update)',k:'kl',o:{ymin:0,ymax:0.02,yticks:[0,0.01,0.02]}},
+                 {x:392,y:188,w:290,h:108,t:'Value loss (critic error, log scale)',k:'vloss',o:{ymin:0.01,ymax:1e9,ysc:'log',yticks:[0.01,1,100,10000,1e6,1e8],yfmt:expFmt}}];
+    boxes.forEach(bx=>{ svg.appendChild(el('text',{x:bx.x,y:bx.y-7,'font-size':11,'font-weight':600,fill:'var(--ink)'},bx.t));
+      lineChart(svg,bx,ser(bx.k),{...bx.o,xmax:A.norm.end,xstep:200000,fs:9.5}); });
+    $('llegend').innerHTML='<span><i class="sw" style="background:var(--neg)"></i>raw rewards (−500 per breached host, unscaled)</span><span><i class="sw" style="background:var(--pos)"></i>normalized rewards (VecNormalize)</span>';
+    $('lnote').textContent='Same algorithm, same seed, only the reward scaling differs. With raw rewards the critic error explodes (about 1e8), the policy barely changes (clip fraction and KL near zero) and the return stays near −112k, i.e. nothing is learned. Normalizing the rewards fixes it: the policy updates normally and the return climbs to about +2,000.';
+  } else {
+    const keys=['ippo','mappo'], series=keys.map(k=>({x:L.entropy[k].x,y:L.entropy[k].y,color:MC[k],w:k===lm?3.2:2.2,op:k===lm?1:.7}));
+    const g=lineChart(svg,{x:56,y:10,w:634,h:272},series,{ymin:1,ymax:3.2,yticks:[1,1.5,2,2.5,3],xmax:L.entropy.mappo.x[L.entropy.mappo.x.length-1],xstep:100000,
+      refs:[{y:3.0445,color:'var(--mute)',label:'uniform random over 21 actions (3.04)',dy:14}]});
+    svg.appendChild(el('text',{x:14,y:146,'font-size':10.5,fill:'var(--mute)',transform:'rotate(-90 14 146)','text-anchor':'middle'},'policy entropy'));
+    svg.appendChild(el('text',{x:373,y:316,'font-size':10.5,fill:'var(--mute)','text-anchor':'middle'},'training steps'));
+    svg.appendChild(el('line',{id:'lcl',x1:g.px(Math.min(lcurV,L.entropy.mappo.x.at(-1))),x2:g.px(Math.min(lcurV,L.entropy.mappo.x.at(-1))),y1:10,y2:282,stroke:'var(--ink)','stroke-width':1.2,opacity:.7}));
+    L._g=g;
+    $('llegend').innerHTML=keys.map(k=>`<span><i class="sw" style="background:${MC[k]}"></i>${L.methods[k].label}</span>`).join('')+'<span>PPO is not shown: its trainer did not log entropy</span>';
+    $('lnote').textContent='Entropy measures how undecided the agent is. At the start it picks among its 21 actions almost uniformly (entropy 3.04). As it learns what works, it commits to a few actions and entropy falls, which is the agent shifting from exploring to exploiting. It stays well above zero, so some randomness remains.';
+  }
+  const slider=$('lcur'); slider.max=lv==='explore'?L.entropy.mappo.x.at(-1):L.xmax; slider.value=Math.min(lcurV,slider.max);
+  updateCursor();
+}
+function updateCursor(){
+  if(lv==='stability') return;
+  const slider=$('lcur'); lcurV=+slider.value; const g=L._g; if(!g) return;
+  const cl=document.getElementById('lcl'); if(cl){ cl.setAttribute('x1',g.px(lcurV)); cl.setAttribute('x2',g.px(lcurV)); }
+  $('lcurlab').textContent=`${lcurV.toLocaleString()} (${eps(lcurV).replace('≈ ','≈ ')})`;
+  let rows='';
+  if(lv==='return'){
+    rows='<tr><th>Method</th><th>Return at this step</th><th>vs matching heuristic</th></tr>'+['ppo','ippo','mappo'].map(k=>{
+      const m=L.methods[k].mean, v=interp(m.x,m.y,lcurV), r=k==='ppo'?L.ref.heur1:L.ref.heur3;
+      return `<tr class="${k===lm?'cur':''}"><td><i class="sw" style="background:${MC[k]}"></i>${L.methods[k].label}</td><td>${v==null?'run already stopped':fm(v)}</td><td>${v==null?'–':(v>=r?`<span class="pos">ahead by ${Math.round(v-r).toLocaleString()}</span>`:`<span class="neg">behind by ${Math.round(r-v).toLocaleString()}</span>`)}</td></tr>`; }).join('');
+  } else {
+    rows='<tr><th>Method</th><th>Entropy at this step</th><th>Share of random-level uncertainty</th></tr>'+['ippo','mappo'].map(k=>{
+      const e=L.entropy[k], v=interp(e.x,e.y,lcurV);
+      return `<tr class="${k===lm?'cur':''}"><td><i class="sw" style="background:${MC[k]}"></i>${L.methods[k].label}</td><td>${v==null?'–':v.toFixed(2)}</td><td>${v==null?'–':Math.round(100*v/3.0445)+'%'}</td></tr>`; }).join('');
+  }
+  $('lread').innerHTML=rows;
+}
+
 /* ---------- controls ---------- */
 function render(){ renderMap(); renderFeed(); renderLedger(); renderOdds(); renderStatus(); drawMarker(); }
 function go(n){ i=Math.max(0,Math.min(cur.steps.length-1,n)); $('scrub').value=i; $('stepno').textContent=`${i+1} / ${cur.steps.length}`; render(); }
@@ -538,8 +677,12 @@ function setup(){
   $('play').onclick=toggle; $('prev').onclick=()=>go(i-1); $('next').onclick=()=>go(i+1); $('scrub').oninput=e=>go(+e.target.value);
   $('speed').onchange=()=>{ if(timer){stop();start();} };
   document.addEventListener('keydown',e=>{ if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)&&e.target.type!=='range')return;
-    if(/^[1-6]$/.test(e.key)){showTab(TABS[+e.key-1]);} else if(e.key===' '){e.preventDefault();toggle();} else if(e.key==='ArrowRight'){go(i+1);} else if(e.key==='ArrowLeft'){go(i-1);} });
+    if(/^[1-7]$/.test(e.key)){showTab(TABS[+e.key-1]);} else if(e.key===' '){e.preventDefault();toggle();} else if(e.key==='ArrowRight'){go(i+1);} else if(e.key==='ArrowLeft'){go(i-1);} });
   document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+  document.querySelectorAll('#lmethod button').forEach(b=>b.onclick=()=>{ lm=b.dataset.m; renderLearn(); });
+  document.querySelectorAll('#lview button').forEach(b=>b.onclick=()=>{ lv=b.dataset.v; renderLearn(); });
+  document.querySelectorAll('#lzoomwrap button').forEach(b=>b.onclick=()=>{ lz=b.dataset.z==='1'; renderLearn(); });
+  $('lcur').oninput=updateCursor;
   let t0='ledger'; try{ t0=localStorage.getItem('rvb-tab')||'ledger'; }catch(e){}
   showTab(t0);
   pick();
