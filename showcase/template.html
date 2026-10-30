@@ -431,7 +431,7 @@ function renderMap(){
     if(s.patched[H.id])badge('✓','var(--pos)'); if(s.honey[H.id])badge('◆','var(--blue)'); if(s.block[H.id])badge('⛔','var(--mute)'); if(s.redirect[H.id])badge('⇄','var(--mute)');
     svg.appendChild(g);
     s.ev.filter(e=>e.side==='blue'&&e.host===H.id&&D.actions[e.action]!=='no_op').forEach(e=>svg.appendChild(el('text',{x,y:y-46,'text-anchor':'middle',fill:'var(--blue)','font-size':14,'font-weight':700},AB[e.action])));
-    s.ev.filter(e=>e.side==='red'&&e.host===H.id&&e.outcome==='landed').forEach(()=>svg.appendChild(el('text',{x,y:y-46,'text-anchor':'middle',fill:'var(--s3)','font-size':14,'font-weight':700},'foothold')));
+    s.ev.filter(e=>e.side==='red'&&e.host===H.id&&e.outcome==='landed').forEach(()=>svg.appendChild(el('text',{x,y:y-64,'text-anchor':'middle',fill:'var(--s3)','font-size':14,'font-weight':700},'foothold')));
   });
   $('simmeta').textContent=`step ${i+1} of ${cur.steps.length} · breached now ${s.stage.filter(x=>x===3).length}`;
 }
